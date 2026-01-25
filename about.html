@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Döner AI</title>
+    <title>Hakkımızda - Döner AI</title>
     <link rel="icon" type="image/webp" href="IMG_20260120_134136_893.webp">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -24,7 +24,7 @@
             align-items: center;
             justify-content: center;
             color: #f7f7f7;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+            padding: 20px;
         }
 
         /* Hamburger Menü */
@@ -102,30 +102,6 @@
             padding-left: 25px;
         }
 
-        /* Hakkımızda - Sağ Üst */
-        .about-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: transparent;
-            color: #f7f7f7;
-            padding: 12px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            z-index: 100;
-            text-decoration: none;
-            backdrop-filter: blur(2px);
-        }
-
-        .about-btn:hover {
-            border-color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
         /* Overlay */
         .overlay {
             position: fixed;
@@ -144,131 +120,106 @@
 
         /* Ana İçerik */
         .container {
-            text-align: center;
-            background: rgba(26, 58, 82, 0.75);
-            padding: 60px 40px;
+            background: rgba(26, 58, 82, 0.85);
+            padding: 50px 40px;
             border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            position: relative;
-            padding-bottom: 100px;
+            max-width: 800px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         h1 {
-            color: #f7f7f7;
-            font-size: 32px;
-            margin-bottom: 20px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 800;
-        }
-
-        p {
-            color: #f7f7f7;
-            font-size: 16px;
+            font-size: 42px;
             margin-bottom: 30px;
-            line-height: 1.6;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-        }
-
-        /* Yeşil Buton - Anıları Gör */
-        .memories-btn {
-            background: #22c55e;
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
-        }
-
-        .memories-btn:hover {
-            background: #16a34a;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.6);
-        }
-
-        .memories-btn:active {
-            transform: translateY(-1px);
-        }
-
-        /* Footer Sosyal Medya */
-        .social-footer {
-            position: absolute;
-            bottom: 15px;
-            left: 20px;
-            display: flex;
-            gap: 15px;
-            z-index: 500;
-        }
-
-        .social-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
+            color: #ffffff;
+            text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: transparent;
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
-            color: #f7f7f7;
-            font-size: 22px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(2px);
-            overflow: hidden;
+            gap: 15px;
         }
 
-        .social-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        h1 img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #ffc107;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+        }
+
+        .highlight {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .social-footer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            text-decoration: none;
         }
 
         .social-icon:hover {
-            border-color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 40px 25px;
-            }
+        .social-icon img {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+        }
 
-            h1 {
-                font-size: 24px;
-            }
+        .team-section {
+            background: rgba(255, 193, 7, 0.1);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
 
-            .memories-btn {
-                padding: 12px 30px;
-                font-size: 16px;
-            }
-
-            .social-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
+        .team-section h3 {
+            color: #ffc107;
+            font-size: 22px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
-    <!-- Hamburger Menü Butonu -->
-    <button class="hamburger" id="hamburger">
+    <!-- Hamburger Menü -->
+    <div class="hamburger" id="hamburger">
         <span></span>
         <span></span>
         <span></span>
-    </button>
+    </div>
 
-    <!-- Sidebar Menü -->
+    <!-- Menü Sidebar -->
     <div class="menu" id="menu">
         <a href="index.html">🏠 Ana Sayfa</a>
         <a href="about.html">ℹ️ Hakkımızda</a>
@@ -277,22 +228,26 @@
     <!-- Overlay -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Hakkımızda Butonu -->
-    <a href="about.html" class="about-btn">Hakkımızda</a>
-
     <!-- Ana İçerik -->
     <div class="container">
-        <h1 style="font-size: 48px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 15px;"><img src="IMG_20260120_134136_893.webp" alt="Döner AI" style="width: 100px; height: 100px; object-fit: contain; margin-left: -20px;"> Döner AI</h1>
-        <p style="font-size: 20px; color: #ff6b6b; margin-bottom: 15px; font-weight: bold;">Sizlerle Döner AI Sunar...</p>
-        <div style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; background-color: rgba(255, 193, 7, 0.1); border: 2px solid #ffc107; border-radius: 6px; padding: 5px 15px;">
-            <span style="width: 8px; height: 8px; background-color: #ffc107; border-radius: 50%;"></span>
-            <p style="font-size: 14px; color: #ffc107; font-weight: bold; margin: 0;">ÇOK YAKINDA</p>
+        <h1><img src="IMG_20260120_134136_893.webp" alt="Döner AI"> Hakkımızda</h1>
+        
+        <p><strong class="highlight">Döner AI</strong>, Türkiye'den dünyaya açılan yenilikçi bir yapay zeka projesidir. <strong>27 Aralık 2025</strong> tarihinde geliştirilmeye başlanan projemiz, tamamen Türk mühendisler tarafından hayata geçirilmektedir.</p>
+
+        <h2>🎯 Vizyonumuz</h2>
+        <p>2026 yılında vizyona girmesi beklenen Döner AI'ın temel amacı, güzel ve kullanışlı bir Türk yapay zekası oluşturmaktır. Teknolojinin gücünü Türkçe diline adapte ederek, kullanıcılarımıza en iyi deneyimi sunmayı hedefliyoruz.</p>
+
+        <h2>💡 Misyonumuz</h2>
+        <p>Döner AI olarak misyonumuz, yapay zeka teknolojisini herkes için erişilebilir ve kullanışlı hale getirmektir. Türk kullanıcıların ihtiyaçlarına özel çözümler üreterek, günlük hayatı kolaylaştırmayı amaçlıyoruz.</p>
+
+        <h2>🚀 Gelişim Sürecimiz</h2>
+        <p>Projemiz hızla gelişiyor ve her geçen gün yeni özellikler ekleniyor. Ekibimiz, en son teknolojileri kullanarak size en iyi hizmeti sunmak için gece gündüz çalışıyor.</p>
+
+        <div class="team-section">
+            <h3>👥 Ekibimize Katılın!</h3>
+            <p style="margin-bottom: 10px;">Döner AI ailesine katılmak ve bu heyecan verici yolculukta bizimle olmak ister misiniz? <strong>Yazılımcıları aramıza almaktan büyük memnuniyet duyarız!</strong></p>
+            <p style="margin-bottom: 0;">Bize yardımcı olmak veya ekibimize katılmak için aşağıdaki sosyal medya hesaplarımızdan bizimle iletişime geçebilirsiniz.</p>
         </div>
-        <div style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; background-color: rgba(255, 0, 0, 0.1); border: 2px solid #ff0000; border-radius: 6px; padding: 5px 15px;">
-            <span style="width: 8px; height: 8px; background-color: #ff0000; border-radius: 50%;"></span>
-            <p style="font-size: 14px; color: #ff0000; font-weight: bold; margin: 0;">KAPALI</p>
-        </div>
-        <p style="font-size: 14px; line-height: 1.8; max-width: 400px; margin: 0 auto;">1 Ocak 2026'da geliştirilmeye başlandı. Size en iyi ve yakın verimi sunmak için çaba gösteriyoruz. Çok yakında Döner AI, tüm dünyada hizmet verecek.</p>
 
         <!-- Sosyal Medya Footer -->
         <div class="social-footer">
