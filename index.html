@@ -244,6 +244,38 @@
             text-align: left;
         }
 
+        /* Footer Sosyal Medya */
+        .social-footer {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 500;
+        }
+
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            color: #f7f7f7;
+            font-size: 22px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(2px);
+        }
+
+        .social-icon:hover {
+            border-color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 40px 25px;
@@ -256,6 +288,18 @@
             .memories-btn {
                 padding: 12px 30px;
                 font-size: 16px;
+            }
+
+            .social-footer {
+                bottom: 15px;
+                left: 15px;
+                gap: 12px;
+            }
+
+            .social-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
             }
         }
     </style>
@@ -282,11 +326,19 @@
     <!-- Hakkımızda Butonu -->
     <button class="about-btn" id="aboutBtn">Hakkımızda</button>
 
+    <!-- Sosyal Medya Footer -->
+    <div class="social-footer">
+        <a href="https://instagram.com" class="social-icon" title="Instagram" target="_blank">📷</a>
+        <a href="https://youtube.com" class="social-icon" title="YouTube" target="_blank">▶️</a>
+        <a href="https://discord.com" class="social-icon" title="Discord" target="_blank">💬</a>
+    </div>
+
     <!-- Ana İçerik -->
     <div class="container">
-        <h1>Hoşgeldiniz!</h1>
-        <p>Güzel anılarımızı bir arada saklayan, hepimizin kalbi olacak bu özel alan.</p>
-        <button class="memories-btn" id="memoriesBtn">Anıları Gör</button>
+        <h1 style="font-size: 48px; margin-bottom: 10px;">🍗 Döner AI</h1>
+        <p style="font-size: 20px; color: #ff6b6b; margin-bottom: 15px; font-weight: bold;">Sizlerle Döner AI Sunar...</p>
+        <p style="font-size: 14px; margin-bottom: 20px; opacity: 0.9;">⏳ Çok Yakında</p>
+        <p style="font-size: 14px; line-height: 1.8; max-width: 400px; margin: 0 auto;">1 Ocak 2026'da geliştirilmeye başlandı. Size en iyi ve yakın verimi sunmak için çaba gösteriyoruz. Çok yakında Döner AI, tüm dünyada hizmet verecek.</p>
     </div>
 
     <!-- Anılar Modal -->
@@ -303,9 +355,10 @@
     <div class="modal" id="aboutModal">
         <div class="modal-content">
             <button class="close-modal" id="closeAboutModal">&times;</button>
-            <h2>Hakkımızda</h2>
-            <p>Bu site, birbirinden güzel insanlardan oluşan bir ekip tarafından, paylaşılan anılarımızı saklamak ve her zaman erişebilmek için oluşturulmuştur.</p>
-            <p>Takım ruhu, güven ve dayanışma ile kurulan bu aile ortamında, her bireyin değeri yüksektir. Hep birlikte güzel şeyler yaratıyoruz.</p>
+            <h2>🍗 Döner AI Hakkında</h2>
+            <p>Döner AI, 1 Ocak 2026'da geliştirilmeye başlandı ve yapay zeka teknolojisinin en son gelişmelerini kullanarak size en iyi hizmeti sunmayı hedefliyoruz.</p>
+            <p>Misyonumuz, her müşteriye en yüksek kalitede hizmet verebilmek ve bunu hızlı, güvenilir ve etkili bir şekilde gerçekleştirmektir. Takımımız, yaratıcılık ve inovasyonla çalışıyor.</p>
+            <p>Çok yakında Döner AI, tüm dünyada profesyonel bir hizmet sunar. Bize güveniniz için teşekkür ederiz ve bu yolculukta bizi takip etmeyi unutmayın!</p>
         </div>
     </div>
 
