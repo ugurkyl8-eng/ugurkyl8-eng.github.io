@@ -1,1 +1,0 @@
-# ugurkyl8-eng.github.io

@@ -1,303 +1,370 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Padres Web Sitesi</title>
-	<style>
-		:root {
-			--calm-bg: linear-gradient(135deg, #dfe9f3 0%, #ffffff 100%);
-			--calm-card: #ffffff;
-			--calm-text: #1f2d3d;
-			--accent: #0f6bff;
-			--accent-2: #f45d48;
-			--hacker-bg: radial-gradient(circle at 20% 20%, #0a1a0f, #050b06 60%);
-			--hacker-grid: rgba(0, 255, 120, 0.08);
-			--hacker-text: #b7ffd6;
-			--warning: #ff365f;
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anılarımız</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-		* { box-sizing: border-box; }
-		body {
-			margin: 0;
-			font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-			background: var(--calm-bg);
-			color: var(--calm-text);
-			transition: background 0.8s ease, color 0.6s ease;
-			min-height: 100vh;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			padding: 24px;
-		}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('indir.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-		.page {
-			width: min(1100px, 100%);
-			display: grid;
-			gap: 20px;
-			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-			align-items: center;
-		}
+        /* Hamburger Menü */
+        .hamburger {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
 
-		.hero {
-			background: var(--calm-card);
-			border-radius: 18px;
-			padding: 28px;
-			box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
-			transition: transform 0.4s ease, box-shadow 0.4s ease, opacity 0.4s ease;
-		}
+        .hamburger:hover {
+            background: rgba(255, 255, 255, 1);
+        }
 
-		.hero:hover { transform: translateY(-4px); box-shadow: 0 24px 50px rgba(0,0,0,0.1); }
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #333;
+            margin: 5px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
 
-		.badge {
-			display: inline-flex;
-			align-items: center;
-			gap: 8px;
-			padding: 8px 12px;
-			border-radius: 999px;
-			background: #e8f0ff;
-			color: #0f3d91;
-			font-weight: 600;
-			letter-spacing: 0.03em;
-			font-size: 13px;
-		}
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(10px, 10px);
+        }
 
-		.badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
 
-		h1 { margin: 12px 0 8px; font-size: 34px; letter-spacing: -0.5px; }
-		p { margin: 0 0 16px; line-height: 1.6; }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
 
-		.btn {
-			display: inline-flex;
-			align-items: center;
-			gap: 10px;
-			padding: 14px 18px;
-			border-radius: 12px;
-			border: none;
-			background: var(--accent);
-			color: #fff;
-			font-weight: 700;
-			letter-spacing: 0.02em;
-			cursor: pointer;
-			box-shadow: 0 10px 24px rgba(15, 107, 255, 0.35);
-			transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-		}
+        /* Menü Sidebar */
+        .menu {
+            position: fixed;
+            left: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 80px 20px 20px;
+            transition: left 0.3s ease;
+            z-index: 999;
+        }
 
-		.btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(15, 107, 255, 0.4); }
-		.btn:active { transform: translateY(0); box-shadow: 0 8px 20px rgba(15, 107, 255, 0.3); }
+        .menu.active {
+            left: 0;
+        }
 
-		.illus {
-			position: relative;
-			background: linear-gradient(135deg, rgba(15,107,255,0.12), rgba(244,93,72,0.12));
-			border-radius: 18px;
-			height: 320px;
-			overflow: hidden;
-			box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
-		}
+        .menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
 
-		.illus::before,
-		.illus::after {
-			content: "";
-			position: absolute;
-			inset: 0;
-			background-size: 120px 120px;
-			background-image: radial-gradient(circle at 20px 20px, rgba(15,107,255,0.14), transparent 36%),
-				radial-gradient(circle at 80px 60px, rgba(244,93,72,0.18), transparent 40%);
-			animation: float 12s linear infinite;
-			opacity: 0.6;
-		}
+        .menu a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            padding-left: 25px;
+        }
 
-		.illus::after { animation-duration: 16s; animation-direction: reverse; opacity: 0.35; }
+        /* Hakkımızda - Sağ Üst */
+        .about-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 100;
+            text-decoration: none;
+        }
 
-		.card-overlay {
-			position: absolute;
-			inset: 18px;
-			border-radius: 14px;
-			background: rgba(255,255,255,0.78);
-			backdrop-filter: blur(4px);
-			border: 1px solid rgba(255,255,255,0.6);
-			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
-			padding: 18px;
-			color: #233;
-			font-weight: 600;
-		}
+        .about-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+        }
 
-		.card-overlay .title { font-size: 18px; letter-spacing: 0.02em; }
-		.card-overlay .tagline { font-size: 14px; color: #4b5563; }
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 998;
+        }
 
-		.pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
-		.pill { padding: 8px 12px; background: #eef4ff; border-radius: 999px; font-size: 12px; color: #1f3c88; }
+        .overlay.active {
+            display: block;
+        }
 
-		@keyframes float { from { transform: translateY(0); } to { transform: translateY(-60px); } }
+        /* Ana İçerik */
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
 
-		/* Hacker state */
-		body.theme-hacker {
-			background: var(--hacker-bg);
-			color: var(--hacker-text);
-		}
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
 
-		body.theme-hacker .hero,
-		body.theme-hacker .illus { opacity: 0; pointer-events: none; transform: scale(0.98); }
+        p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
 
-		.hacker-shell {
-			display: none;
-			grid-column: 1 / -1;
-			background: rgba(0, 0, 0, 0.75);
-			border: 1px solid var(--hacker-grid);
-			border-radius: 16px;
-			padding: 24px;
-			box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
-			position: relative;
-			overflow: hidden;
-			min-height: 460px;
-		}
+        /* Yeşil Buton - Anıları Gör */
+        .memories-btn {
+            background: #22c55e;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+        }
 
-		.grid-lines {
-			position: absolute;
-			inset: 0;
-			background-image: linear-gradient(var(--hacker-grid) 1px, transparent 1px),
-				linear-gradient(90deg, var(--hacker-grid) 1px, transparent 1px);
-			background-size: 38px 38px;
-			pointer-events: none;
-		}
+        .memories-btn:hover {
+            background: #16a34a;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.6);
+        }
 
-		.scan-bar {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			height: 90px;
-			background: linear-gradient(180deg, rgba(0,255,140,0.18), transparent);
-			animation: scan 3s linear infinite;
-			mix-blend-mode: screen;
-		}
+        .memories-btn:active {
+            transform: translateY(-1px);
+        }
 
-		@keyframes scan { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
+        /* Modal Popup */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+        }
 
-		.terminal {
-			position: relative;
-			z-index: 1;
-			font-family: "Fira Code", "Source Code Pro", monospace;
-			color: var(--hacker-text);
-		}
+        .modal.active {
+            display: flex;
+        }
 
-		.terminal h2 { margin: 0 0 6px; letter-spacing: 0.08em; text-transform: uppercase; }
-		.terminal .prompt { color: #4cff9f; }
-		.terminal .error { color: var(--warning); font-weight: 700; }
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
 
-		.flex { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
-		.panel {
-			background: rgba(255, 255, 255, 0.04);
-			border: 1px solid var(--hacker-grid);
-			border-radius: 12px;
-			padding: 14px;
-			min-width: 220px;
-			flex: 1;
-		}
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #999;
+        }
 
-		.bank {
-			display: flex;
-			gap: 12px;
-			align-items: center;
-			margin-top: 14px;
-			padding: 12px;
-			background: rgba(255, 255, 255, 0.05);
-			border: 1px dashed rgba(255, 54, 95, 0.45);
-			border-radius: 12px;
-		}
+        .close-modal:hover {
+            color: #333;
+        }
 
-		.bank-logo {
-			width: 52px;
-			height: 52px;
-			border-radius: 12px;
-			background: linear-gradient(135deg, #d6001c, #8b0016);
-			display: grid;
-			place-items: center;
-			color: #fff;
-			font-weight: 800;
-			letter-spacing: 0.02em;
-			box-shadow: 0 10px 24px rgba(214, 0, 28, 0.45);
-		}
+        .modal h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
 
-		.panic { margin: 6px 0 0; color: var(--warning); font-weight: 800; font-size: 18px; }
+        .modal p {
+            color: #666;
+            text-align: left;
+        }
 
-		.show { display: block; }
-	</style>
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .memories-btn {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
 </head>
 <body>
-	<div class="page">
-		<section class="hero" aria-live="polite">
-			<div class="badge"><span class="dot"></span>Padres Ekibi · Güvenli Giriş</div>
-			<h1>Padres Web Sitesi</h1>
-			<p>Takım ruhu, güven ve güzel anılar burada. Arkadaş ortamımız için özel olarak hazırlanmış, sade ve şık bir giriş.</p>
-			<button class="btn" id="continueBtn">Güzel anılarımızı görmek için devam et →</button>
-		</section>
+    <!-- Hamburger Menü Butonu -->
+    <button class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 
-		<figure class="illus" aria-hidden="true">
-			<div class="card-overlay">
-				<div>
-					<div class="title">Padres Ekip Kartı</div>
-					<div class="tagline">Birlikte daha güçlüyüz.</div>
-				</div>
-				<div class="pill-row">
-					<span class="pill">Güvenli Erişim</span>
-					<span class="pill">Ekip Bağlantısı</span>
-					<span class="pill">Özel Alan</span>
-				</div>
-			</div>
-		</figure>
+    <!-- Sidebar Menü -->
+    <div class="menu" id="menu">
+        <a href="#anasayfa">Anasayfa</a>
+        <a href="#galeri">Galeri</a>
+        <a href="#iletisim">İletişim</a>
+        <a href="#ayarlar">Ayarlar</a>
+    </div>
 
-		<section class="hacker-shell" id="hackerShell">
-			<div class="grid-lines"></div>
-			<div class="scan-bar"></div>
-			<div class="terminal">
-				<h2>> Güvenlik Uyarısı Aktif</h2>
-				<div class="prompt">[padres@secure]$ bağlantı taranıyor...</div>
-				<div class="flex">
-					<div class="panel">
-						<div>IP Adresi: <strong id="ip"></strong></div>
-						<div>Konum: <strong>İstanbul</strong></div>
-						<div>Durum: <span class="error">İzinsiz Giriş Algılandı</span></div>
-					</div>
-					<div class="panel">
-						<div>Log: bağlantı izi sürülüyor...</div>
-						<div>Firewall: BYPASS</div>
-						<div>İşlem: veri kilidi başlatıldı</div>
-					</div>
-				</div>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
 
-				<div class="bank">
-					<div class="bank-logo" aria-hidden="true">ZB</div>
-					<div>
-						<div><strong>Ziraat Bankası Mesajı</strong></div>
-						<div>Bu siteye girdiğiniz için <strong>24.674 TL</strong> ceza yediniz.</div>
-						<div class="panic">Ödeme bildirimi hazırlanıyor...</div>
-					</div>
-				</div>
+    <!-- Hakkımızda Butonu -->
+    <button class="about-btn" id="aboutBtn">Hakkımızda</button>
 
-				<div class="prompt" style="margin-top:16px;">[padres@secure]$ işlem kaydedildi ▌</div>
-			</div>
-		</section>
-	</div>
+    <!-- Ana İçerik -->
+    <div class="container">
+        <h1>Hoşgeldiniz!</h1>
+        <p>Güzel anılarımızı bir arada saklayan, hepimizin kalbi olacak bu özel alan.</p>
+        <button class="memories-btn" id="memoriesBtn">Anıları Gör</button>
+    </div>
 
-	<script>
-		const btn = document.getElementById('continueBtn');
-		const shell = document.getElementById('hackerShell');
-		const ipEl = document.getElementById('ip');
+    <!-- Anılar Modal -->
+    <div class="modal" id="memoriesModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">&times;</button>
+            <h2>Güzel Anılarımız</h2>
+            <p>Buraya tüm güzel anılarımız ve özel momentlerimiz eklenecek. Birlikte yaşadığımız her an, her gülüş, her sürpriz ve her zor anın gücü burada toplanıyor.</p>
+            <p>Bu sayfada fotoğraf galerisi, videolar, yazılar ve daha pek çok şey paylaşabiliriz. Hem hüzünlü hem de mutlu anılarımız, bizi birbirimize daha da yakın getirecek.</p>
+        </div>
+    </div>
 
-		function randomIp() {
-			const seg = () => Math.floor(Math.random() * 256);
-			return `78.${seg()}.${seg()}.${seg()}`;
-		}
+    <!-- Hakkımızda Modal -->
+    <div class="modal" id="aboutModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeAboutModal">&times;</button>
+            <h2>Hakkımızda</h2>
+            <p>Bu site, birbirinden güzel insanlardan oluşan bir ekip tarafından, paylaşılan anılarımızı saklamak ve her zaman erişebilmek için oluşturulmuştur.</p>
+            <p>Takım ruhu, güven ve dayanışma ile kurulan bu aile ortamında, her bireyin değeri yüksektir. Hep birlikte güzel şeyler yaratıyoruz.</p>
+        </div>
+    </div>
 
-		btn.addEventListener('click', () => {
-			document.body.classList.add('theme-hacker');
-			shell.classList.add('show');
-			ipEl.textContent = randomIp();
-		});
-	</script>
+    <script>
+        // Hamburger Menü
+        const hamburger = document.getElementById('hamburger');
+        const menu = document.getElementById('menu');
+        const overlay = document.getElementById('overlay');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            menu.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // Anıları Gör Modal
+        const memoriesBtn = document.getElementById('memoriesBtn');
+        const memoriesModal = document.getElementById('memoriesModal');
+        const closeModal = document.getElementById('closeModal');
+
+        memoriesBtn.addEventListener('click', () => {
+            memoriesModal.classList.add('active');
+        });
+
+        closeModal.addEventListener('click', () => {
+            memoriesModal.classList.remove('active');
+        });
+
+        // Hakkımızda Modal
+        const aboutBtn = document.getElementById('aboutBtn');
+        const aboutModal = document.getElementById('aboutModal');
+        const closeAboutModal = document.getElementById('closeAboutModal');
+
+        aboutBtn.addEventListener('click', () => {
+            aboutModal.classList.add('active');
+        });
+
+        closeAboutModal.addEventListener('click', () => {
+            aboutModal.classList.remove('active');
+        });
+
+        // Modal dışına tıklanınca kapat
+        window.addEventListener('click', (event) => {
+            if (event.target === memoriesModal) {
+                memoriesModal.classList.remove('active');
+            }
+            if (event.target === aboutModal) {
+                aboutModal.classList.remove('active');
+            }
+        });
+
+        // Menü linklerine tıklanınca menüyü kapat
+        const menuLinks = document.querySelectorAll('.menu a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                menu.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        });
+    </script>
 </body>
 </html>
-
