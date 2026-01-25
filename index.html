@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Döner AI</title>
     <link rel="icon" type="image/webp" href="IMG_20260120_134136_893.webp">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -144,17 +145,24 @@
         /* Ana İçerik */
         .container {
             text-align: center;
-            background: transparent;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(14, 165, 233, 0.15) 50%, rgba(168, 85, 247, 0.15) 100%);
             padding: 60px 40px;
             border-radius: 20px;
             max-width: 500px;
             width: 90%;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding-bottom: 100px;
         }
 
         h1 {
             color: #f7f7f7;
             font-size: 32px;
             margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
         }
 
         p {
@@ -162,6 +170,8 @@
             font-size: 16px;
             margin-bottom: 30px;
             line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
         }
 
         /* Yeşil Buton - Anıları Gör */
@@ -247,8 +257,8 @@
 
         /* Footer Sosyal Medya */
         .social-footer {
-            position: fixed;
-            bottom: 20px;
+            position: absolute;
+            bottom: 15px;
             left: 20px;
             display: flex;
             gap: 15px;
@@ -329,19 +339,6 @@
     <!-- Hakkımızda Butonu -->
     <button class="about-btn" id="aboutBtn">Hakkımızda</button>
 
-    <!-- Sosyal Medya Footer -->
-    <div class="social-footer">
-        <a href="https://www.instagram.com/doneraioriginal?igsh=dml6bmF6dW12dDU0" class="social-icon" title="Instagram" target="_blank">
-            <img src="images (6).jpeg" alt="Instagram">
-        </a>
-        <a href="https://discord.gg/5kjDxwzn5" class="social-icon" title="Discord" target="_blank">
-            <img src="images (4).png" alt="Discord">
-        </a>
-        <a href="https://youtube.com/@zenixeditsyt?si=Su8UD-ymZxmIPJcC" class="social-icon" title="YouTube" target="_blank">
-            <img src="png-clipart-youtube-play-button-computer-icons-youtube-youtube-logo-angle-rectangle-thumbnail.png" alt="YouTube">
-        </a>
-    </div>
-
     <!-- Ana İçerik -->
     <div class="container">
         <h1 style="font-size: 48px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 15px;"><img src="IMG_20260120_134136_893.webp" alt="Döner AI" style="width: 100px; height: 100px; object-fit: contain; margin-left: -20px;"> Döner AI</h1>
@@ -349,6 +346,19 @@
         <p style="font-size: 14px; margin-bottom: 10px; opacity: 0.9;">⏳ Çok Yakında</p>
         <p style="font-size: 14px; margin-bottom: 20px; color: #ff0000; font-weight: bold;">🔒 Kapalı</p>
         <p style="font-size: 14px; line-height: 1.8; max-width: 400px; margin: 0 auto;">1 Ocak 2026'da geliştirilmeye başlandı. Size en iyi ve yakın verimi sunmak için çaba gösteriyoruz. Çok yakında Döner AI, tüm dünyada hizmet verecek.</p>
+
+        <!-- Sosyal Medya Footer -->
+        <div class="social-footer">
+            <a href="https://www.instagram.com/doneraioriginal?igsh=dml6bmF6dW12dDU0" class="social-icon" title="Instagram" target="_blank">
+                <img src="images (6).jpeg" alt="Instagram">
+            </a>
+            <a href="https://discord.gg/5kjDxwzn5" class="social-icon" title="Discord" target="_blank">
+                <img src="images (4).png" alt="Discord">
+            </a>
+            <a href="https://youtube.com/@zenixeditsyt?si=Su8UD-ymZxmIPJcC" class="social-icon" title="YouTube" target="_blank">
+                <img src="png-clipart-youtube-play-button-computer-icons-youtube-youtube-logo-angle-rectangle-thumbnail.png" alt="YouTube">
+            </a>
+        </div>
     </div>
 
 
