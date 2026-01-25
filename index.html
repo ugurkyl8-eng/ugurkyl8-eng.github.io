@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anılarımız</title>
+    <title>Döner AI</title>
+    <link rel="icon" type="image/jpeg" href="Screenshot_20260123_181143_Gallery.jpg">
     <style>
         * {
             margin: 0;
@@ -343,21 +344,14 @@
 
     <!-- Ana İçerik -->
     <div class="container">
-        <h1 style="font-size: 48px; margin-bottom: 10px;">🍗 Döner AI</h1>
+        <h1 style="font-size: 48px; margin-bottom: 10px;"><img src="Screenshot_20260123_181143_Gallery.jpg" alt="Döner AI" style="width: 60px; height: 60px; object-fit: contain;"> Döner AI</h1>
         <p style="font-size: 20px; color: #ff6b6b; margin-bottom: 15px; font-weight: bold;">Sizlerle Döner AI Sunar...</p>
-        <p style="font-size: 14px; margin-bottom: 20px; opacity: 0.9;">⏳ Çok Yakında</p>
+        <p style="font-size: 14px; margin-bottom: 10px; opacity: 0.9;">⏳ Çok Yakında</p>
+        <p style="font-size: 14px; margin-bottom: 20px; color: #ff0000; font-weight: bold;">🔒 Kapalı</p>
         <p style="font-size: 14px; line-height: 1.8; max-width: 400px; margin: 0 auto;">1 Ocak 2026'da geliştirilmeye başlandı. Size en iyi ve yakın verimi sunmak için çaba gösteriyoruz. Çok yakında Döner AI, tüm dünyada hizmet verecek.</p>
     </div>
 
-    <!-- Anılar Modal -->
-    <div class="modal" id="memoriesModal">
-        <div class="modal-content">
-            <button class="close-modal" id="closeModal">&times;</button>
-            <h2>Güzel Anılarımız</h2>
-            <p>Buraya tüm güzel anılarımız ve özel momentlerimiz eklenecek. Birlikte yaşadığımız her an, her gülüş, her sürpriz ve her zor anın gücü burada toplanıyor.</p>
-            <p>Bu sayfada fotoğraf galerisi, videolar, yazılar ve daha pek çok şey paylaşabiliriz. Hem hüzünlü hem de mutlu anılarımız, bizi birbirimize daha da yakın getirecek.</p>
-        </div>
-    </div>
+
 
     <!-- Hakkımızda Modal -->
     <div class="modal" id="aboutModal">
@@ -396,20 +390,7 @@
         if (memoriesBtn && memoriesModal && closeModal) {
             memoriesBtn.addEventListener('click', () => {
                 memoriesModal.classList.add('active');
-            });
-
-            closeModal.addEventListener('click', () => {
-                memoriesModal.classList.remove('active');
-            });
-        }
-
-        // Hakkımızda Modal
-        const aboutBtn = document.getElementById('aboutBtn');
-        const aboutModal = document.getElementById('aboutModal');
-        const closeAboutModal = document.getElementById('closeAboutModal');
-
-        aboutBtn.addEventListener('click', () => {
-            aboutModal.classList.add('active');
+   aboutModal.classList.add('active');
         });
 
         closeAboutModal.addEventListener('click', () => {
@@ -431,10 +412,7 @@
         menuLinks.forEach(link => {
             link.addEventListener('click', () => {
                 hamburger.classList.remove('active');
-                menu.classList.remove('active');
-                overlay.classList.remove('active');
-            });
-        });
+                menu.classList.re
     </script>
 </body>
 </html>
