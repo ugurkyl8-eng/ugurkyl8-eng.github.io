@@ -81,12 +81,54 @@
 
         #gameCanvas {
             display: block;
-            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
+            background: #f7f7f7;
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 10px;
             margin: 20px 0;
             max-width: 100%;
             height: auto;
+        }
+
+        #gameCanvas.night-mode {
+            background: #2d3748;
+        }
+
+        .night-mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .night-mode-toggle input[type="checkbox"] {
+            width: 50px;
+            height: 25px;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .night-mode-toggle input[type="checkbox"]:before {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            background: #ffc107;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .night-mode-toggle input[type="checkbox"]:checked {
+            background: rgba(255, 193, 7, 0.3);
+        }
+
+        .night-mode-toggle input[type="checkbox"]:checked:before {
+            left: 27px;
         }
 
         .game-controls {
@@ -204,8 +246,15 @@
                 font-size: 22px;
             }
 
+            .game-header {
+                flex-direction: column;
+                align-items: center;
+            }
+
             .game-stats {
                 gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
             .stat-label,
@@ -215,6 +264,22 @@
 
             #gameCanvas {
                 border-width: 2px;
+                width: 100%;
+                height: auto;
+            }
+
+            .game-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            button {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .night-mode-toggle {
+                font-size: 12px;
             }
         }
     </style>
@@ -232,6 +297,10 @@
                     <span class="stat-label">Rekor:</span>
                     <span class="stat-value record-value" id="record">0</span>
                 </div>
+                <div class="night-mode-toggle">
+                    <span>🌙 Gece Modu</span>
+                    <input type="checkbox" id="nightModeToggle" onchange="toggleNightMode()">
+                </div>
             </div>
         </div>
 
@@ -244,8 +313,8 @@
         <canvas id="gameCanvas" width="800" height="300"></canvas>
 
         <div class="instructions">
-            <strong>Talimatlar:</strong> BAŞLAT butonuna basın → SPACE veya ↑ tuşu ile zıplayın → Kuşlardan ve kaktüslerden kaçının → 
-            Oyun git gide hızlanır! 🚀
+            <strong>Talimatlar:</strong> BAŞLAT butonuna basın → SPACE, ↑ tuşu veya ekrana dokunarak zıplayın → Kuşlardan ve kaktüslerden kaçının → 
+            Oyun git gide hızlanır! 🚀 | 🌙 Gece modunu deneyin!
         </div>
 
         <a href="index.html" class="back-link">← Ana Sayfaya Dön</a>
@@ -269,6 +338,18 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        
+        // Canvas boyutunu ayarla (responsive)
+        function resizeCanvas() {
+            const container = document.querySelector('.game-container');
+            const maxWidth = Math.min(800, container.clientWidth - 60);
+            canvas.style.width = maxWidth + 'px';
+            canvas.style.height = (maxWidth * 0.375) + 'px'; // 800x300 oranını koru
+        }
+        
+        // Sayfa yüklendiğinde ve pencere boyutu değiştiğinde
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
         // Oyun değişkenleri
         let gameRunning = false;
@@ -278,41 +359,144 @@
         let record = localStorage.getItem('dinoGameRecord') || 0;
         let startTime = 0;
         let pausedTime = 0;
+        let nightMode = false;
 
         // Dinozor
         const dino = {
             x: 50,
             y: 0,
-            width: 40,
-            height: 50,
+            width: 44,
+            height: 47,
             velocityY: 0,
             jumping: false,
-            emoji: '🦕'
+            frame: 0
         };
 
         // Engeller
         let obstacles = [];
         let obstacleCount = 0;
+        let cloudX = 0;
 
-        // Updaterecord display
+        // Update record display
         document.getElementById('record').textContent = record;
 
-        // Dinazoru draw et
+        // Chrome dinozorunu çiz
         function drawDino() {
-            ctx.font = dino.width + 'px Arial';
-            ctx.fillText(dino.emoji, dino.x, dino.y + dino.height);
+            ctx.fillStyle = nightMode ? '#fff' : '#535353';
+            
+            // Vücut
+            ctx.fillRect(dino.x + 22, dino.y + 0, 22, 22);
+            
+            // Baş
+            ctx.fillRect(dino.x + 10, dino.y + 10, 12, 12);
+            
+            // Göz
+            ctx.fillStyle = nightMode ? '#535353' : '#fff';
+            ctx.fillRect(dino.x + 12, dino.y + 12, 4, 4);
+            
+            ctx.fillStyle = nightMode ? '#fff' : '#535353';
+            
+            // Ağız
+            ctx.fillRect(dino.x + 8, dino.y + 18, 6, 4);
+            
+            // Kol
+            ctx.fillRect(dino.x + 22, dino.y + 22, 6, 4);
+            
+            // Bacaklar (koşma animasyonu)
+            if (!dino.jumping) {
+                if (Math.floor(Date.now() / 100) % 2 === 0) {
+                    ctx.fillRect(dino.x + 22, dino.y + 32, 6, 15);
+                    ctx.fillRect(dino.x + 34, dino.y + 38, 6, 9);
+                } else {
+                    ctx.fillRect(dino.x + 22, dino.y + 38, 6, 9);
+                    ctx.fillRect(dino.x + 34, dino.y + 32, 6, 15);
+                }
+            } else {
+                ctx.fillRect(dino.x + 22, dino.y + 32, 6, 12);
+                ctx.fillRect(dino.x + 34, dino.y + 32, 6, 12);
+            }
+            
+            // Kuyruk
+            ctx.fillRect(dino.x + 38, dino.y + 6, 6, 6);
+            ctx.fillRect(dino.x + 42, dino.y + 0, 6, 6);
+        }
+
+        // Kaktüs çiz
+        function drawCactus(x, y, type) {
+            ctx.fillStyle = nightMode ? '#fff' : '#3d6f3d';
+            
+            if (type === 1) {
+                // Tek kaktüs
+                ctx.fillRect(x + 6, y, 6, 28);
+                ctx.fillRect(x, y + 8, 6, 12);
+                ctx.fillRect(x + 12, y + 12, 6, 10);
+            } else if (type === 2) {
+                // Çift kaktüs
+                ctx.fillRect(x + 2, y, 6, 28);
+                ctx.fillRect(x + 14, y, 6, 28);
+            } else {
+                // Üçlü kaktüs
+                ctx.fillRect(x, y + 4, 6, 24);
+                ctx.fillRect(x + 8, y, 6, 28);
+                ctx.fillRect(x + 16, y + 6, 6, 22);
+            }
+        }
+
+        // Kuş çiz
+        function drawBird(x, y, frame) {
+            ctx.fillStyle = nightMode ? '#fff' : '#535353';
+            
+            // Vücut
+            ctx.fillRect(x + 10, y + 6, 16, 8);
+            
+            // Baş
+            ctx.fillRect(x + 6, y + 4, 6, 6);
+            ctx.fillRect(x + 4, y + 6, 4, 4);
+            
+            // Kanatlar (animasyon)
+            if (frame % 2 === 0) {
+                ctx.fillRect(x + 10, y + 0, 16, 4);
+                ctx.fillRect(x + 10, y + 14, 16, 4);
+            } else {
+                ctx.fillRect(x + 10, y + 2, 16, 2);
+                ctx.fillRect(x + 10, y + 14, 16, 2);
+            }
+            
+            // Kuyruk
+            ctx.fillRect(x + 24, y + 6, 4, 4);
+            ctx.fillRect(x + 26, y + 4, 4, 8);
+        }
+
+        // Bulutlar çiz
+        function drawClouds() {
+            ctx.fillStyle = nightMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.1)';
+            
+            for (let i = 0; i < 3; i++) {
+                const x = (cloudX + i * 300) % (canvas.width + 100);
+                const y = 30 + i * 25;
+                
+                // Bulut şekli
+                ctx.fillRect(x, y, 20, 6);
+                ctx.fillRect(x + 6, y - 4, 12, 4);
+                ctx.fillRect(x + 10, y - 8, 8, 4);
+            }
+            
+            cloudX -= 0.5 * gameSpeed;
         }
 
         // Engel oluştur
         function createObstacle() {
-            const type = Math.random() > 0.6 ? 'bird' : 'cactus';
+            const type = Math.random() > 0.5 ? 'bird' : 'cactus';
+            const cactusType = Math.floor(Math.random() * 3) + 1;
+            
             const obstacle = {
                 x: canvas.width,
-                y: type === 'bird' ? Math.random() * 100 + 50 : canvas.height - 80,
-                width: 30,
-                height: 50,
+                y: type === 'bird' ? canvas.height - 120 - Math.random() * 40 : canvas.height - 80,
+                width: type === 'bird' ? 32 : (cactusType === 3 ? 22 : 18),
+                height: type === 'bird' ? 18 : 28,
                 type: type,
-                emoji: type === 'bird' ? '🦅' : '🌵'
+                cactusType: cactusType,
+                frame: 0
             };
             obstacles.push(obstacle);
         }
@@ -321,8 +505,13 @@
         function drawObstacles() {
             obstacles.forEach((obstacle, index) => {
                 obstacle.x -= 5 * gameSpeed;
-                ctx.font = obstacle.width + 'px Arial';
-                ctx.fillText(obstacle.emoji, obstacle.x, obstacle.y + obstacle.height);
+                obstacle.frame++;
+                
+                if (obstacle.type === 'bird') {
+                    drawBird(obstacle.x, obstacle.y, Math.floor(obstacle.frame / 10));
+                } else {
+                    drawCactus(obstacle.x, obstacle.y, obstacle.cactusType);
+                }
 
                 // Çarpışma kontrolü
                 if (checkCollision(dino, obstacle)) {
@@ -375,15 +564,25 @@
             if (!gameRunning) return;
 
             // Canvas temizle
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = nightMode ? '#2d3748' : '#f7f7f7';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Bulutları çiz
+            drawClouds();
 
             // Yer çizgi
-            ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+            ctx.strokeStyle = nightMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(83, 83, 83, 0.5)';
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(0, canvas.height - 50);
             ctx.lineTo(canvas.width, canvas.height - 50);
             ctx.stroke();
+            
+            // Yer çizgisi deseni
+            for (let i = 0; i < canvas.width; i += 20) {
+                ctx.fillStyle = nightMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(83, 83, 83, 0.2)';
+                ctx.fillRect(i + (Date.now() / 50) % 20, canvas.height - 48, 4, 2);
+            }
 
             if (!gamePaused) {
                 updateDino();
@@ -402,7 +601,7 @@
             drawDino();
 
             // Hız göster
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.fillStyle = nightMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(83, 83, 83, 0.5)';
             ctx.font = '12px Arial';
             ctx.fillText('Hız: ' + gameSpeed.toFixed(2) + 'x', 10, 20);
 
@@ -479,13 +678,36 @@
             document.getElementById('pauseBtn').textContent = '⏸️ DURAKLAT';
             document.getElementById('gameOverScreen').style.display = 'none';
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+            ctx.fillStyle = nightMode ? '#2d3748' : '#f7f7f7';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = nightMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(83, 83, 83, 0.5)';
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(0, canvas.height - 50);
             ctx.lineTo(canvas.width, canvas.height - 50);
             ctx.stroke();
+        }
+
+        // Gece modunu değiştir
+        function toggleNightMode() {
+            nightMode = document.getElementById('nightModeToggle').checked;
+            if (nightMode) {
+                canvas.classList.add('night-mode');
+            } else {
+                canvas.classList.remove('night-mode');
+            }
+            
+            // Oyun çalışmıyorsa canvas'ı yeniden çiz
+            if (!gameRunning) {
+                ctx.fillStyle = nightMode ? '#2d3748' : '#f7f7f7';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = nightMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(83, 83, 83, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height - 50);
+                ctx.lineTo(canvas.width, canvas.height - 50);
+                ctx.stroke();
+            }
         }
 
         // Oyun bitir
