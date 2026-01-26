@@ -292,5 +292,210 @@
             });
         });
     </script>
+
+    <!-- Dino Oyunu -->
+    <div style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.8); padding: 10px; text-align: center; z-index: 999;">
+        <p style="color: white; font-size: 12px; margin-bottom: 5px;">Sıkılmamanız için sizin için küçük bir oyun</p>
+        <canvas id="dinoGame" width="600" height="150" style="background: #f7f7f7; border-radius: 5px; display: block; margin: 0 auto;"></canvas>
+        <div id="score" style="position: absolute; top: 15px; right: 20px; color: white; font-weight: bold; font-size: 16px;">Puan: 0</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('dinoGame');
+        const ctx = canvas.getContext('2d');
+
+        let score = 0;
+        let gameSpeed = 6;
+        let gameOver = false;
+        let isJumping = false;
+        let gravity = 0.6;
+        let jumpPower = 0;
+        let isDay = true;
+        let frameCount = 0;
+
+        // Dino
+        const dino = {
+            x: 50,
+            y: canvas.height - 60,
+            width: 40,
+            height: 50,
+            velocityY: 0,
+            jump: function() {
+                if (!isJumping && !gameOver) {
+                    this.velocityY = -12;
+                    isJumping = true;
+                }
+            },
+            update: function() {
+                this.velocityY += gravity;
+                this.y += this.velocityY;
+
+                if (this.y > canvas.height - 60) {
+                    this.y = canvas.height - 60;
+                    this.velocityY = 0;
+                    isJumping = false;
+                }
+            },
+            draw: function() {
+                ctx.fillStyle = '#535353';
+                // Gövde
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                // Baş
+                ctx.fillRect(this.x + 10, this.y - 15, 25, 20);
+                // Göz
+                ctx.fillStyle = 'white';
+                ctx.fillRect(this.x + 25, this.y - 10, 5, 5);
+                // Bacaklar
+                ctx.fillStyle = '#535353';
+                ctx.fillRect(this.x + 5, this.y + this.height, 8, 10);
+                ctx.fillRect(this.x + 25, this.y + this.height, 8, 10);
+            }
+        };
+
+        // Engeller
+        let obstacles = [];
+        let obstacleTimer = 0;
+
+        function createObstacle() {
+            const type = Math.random() > 0.5 ? 'cactus' : 'bird';
+            const obstacle = {
+                x: canvas.width,
+                y: type === 'cactus' ? canvas.height - 50 : canvas.height - 90,
+                width: type === 'cactus' ? 20 : 35,
+                height: type === 'cactus' ? 40 : 25,
+                type: type
+            };
+            obstacles.push(obstacle);
+        }
+
+        function updateObstacles() {
+            obstacleTimer++;
+            if (obstacleTimer > 100 - Math.floor(score / 100)) {
+                createObstacle();
+                obstacleTimer = 0;
+            }
+
+            obstacles.forEach((obstacle, index) => {
+                obstacle.x -= gameSpeed;
+
+                if (obstacle.x + obstacle.width < 0) {
+                    obstacles.splice(index, 1);
+                    score++;
+                    document.getElementById('score').innerText = 'Puan: ' + score;
+                    
+                    // Hız artışı
+                    if (score % 100 === 0) {
+                        gameSpeed += 0.5;
+                    }
+                }
+
+                // Çarpışma kontrolü
+                if (obstacle.x < dino.x + dino.width &&
+                    obstacle.x + obstacle.width > dino.x &&
+                    obstacle.y < dino.y + dino.height &&
+                    obstacle.y + obstacle.height > dino.y) {
+                    gameOver = true;
+                }
+            });
+        }
+
+        function drawObstacles() {
+            obstacles.forEach(obstacle => {
+                ctx.fillStyle = '#535353';
+                if (obstacle.type === 'cactus') {
+                    // Kaktüs
+                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                    ctx.fillRect(obstacle.x - 5, obstacle.y + 10, 10, 15);
+                    ctx.fillRect(obstacle.x + 15, obstacle.y + 10, 10, 15);
+                } else {
+                    // Kuş
+                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                    // Kanatlar
+                    ctx.fillRect(obstacle.x - 5, obstacle.y + 8, 15, 3);
+                    ctx.fillRect(obstacle.x + 25, obstacle.y + 8, 15, 3);
+                }
+            });
+        }
+
+        // Gece/Gündüz değişimi
+        function updateBackground() {
+            frameCount++;
+            if (score > 0 && score % 200 === 0 && frameCount % 60 === 0) {
+                isDay = !isDay;
+            }
+            ctx.fillStyle = isDay ? '#f7f7f7' : '#2b2b2b';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Zemin
+        function drawGround() {
+            ctx.strokeStyle = isDay ? '#535353' : '#b0b0b0';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - 10);
+            ctx.lineTo(canvas.width, canvas.height - 10);
+            ctx.stroke();
+        }
+
+        function gameLoop() {
+            if (!gameOver) {
+                updateBackground();
+                drawGround();
+                dino.update();
+                dino.draw();
+                updateObstacles();
+                drawObstacles();
+                requestAnimationFrame(gameLoop);
+            } else {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'white';
+                ctx.font = '30px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('OYUN BİTTİ!', canvas.width / 2, canvas.height / 2 - 20);
+                ctx.font = '16px Arial';
+                ctx.fillText('Puanınız: ' + score, canvas.width / 2, canvas.height / 2 + 10);
+                ctx.fillText('Tekrar başlamak için tıklayın', canvas.width / 2, canvas.height / 2 + 40);
+            }
+        }
+
+        function resetGame() {
+            score = 0;
+            gameSpeed = 6;
+            gameOver = false;
+            isJumping = false;
+            obstacles = [];
+            obstacleTimer = 0;
+            dino.y = canvas.height - 60;
+            dino.velocityY = 0;
+            isDay = true;
+            frameCount = 0;
+            document.getElementById('score').innerText = 'Puan: 0';
+            gameLoop();
+        }
+
+        // Kontroller
+        document.addEventListener('click', (e) => {
+            if (gameOver) {
+                resetGame();
+            } else {
+                dino.jump();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                if (gameOver) {
+                    resetGame();
+                } else {
+                    dino.jump();
+                }
+            }
+        });
+
+        // Oyunu başlat
+        gameLoop();
+    </script>
 </body>
 </html>
