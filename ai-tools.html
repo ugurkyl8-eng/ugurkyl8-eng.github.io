@@ -563,6 +563,7 @@
             <div style="margin-bottom: 15px; display: grid; grid-template-columns: 1fr; gap: 10px;">
                 <select id="providerSelect" style="padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f7f7f7;">
                     <option value="openai">OpenAI (DALL·E)</option>
+                    <option value="huggingface">Hugging Face (Stable Diffusion)</option>
                     <option value="gemini">Google Gemini</option>
                     <option value="claude">Anthropic Claude</option>
                     <option value="grok">xAI Grok</option>
@@ -678,6 +679,7 @@
         function providerLabel(value) {
             switch (value) {
                 case 'openai': return 'OpenAI (DALL·E)';
+                case 'huggingface': return 'Hugging Face (Stable Diffusion)';
                 case 'gemini': return 'Google Gemini';
                 case 'claude': return 'Anthropic Claude';
                 case 'grok': return 'xAI Grok';
@@ -815,6 +817,28 @@
                     addImageToGallery(data.data[0].url, prompt);
                     document.getElementById('prompt').value = '';
                     showSuccess('Görsel başarıyla oluşturuldu!');
+                } else if (provider === 'huggingface') {
+                    const hfResponse = await fetch('https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ inputs: prompt })
+                    });
+
+                    // Hugging Face dönen yanıt blob (image) olabilir
+                    const contentType = hfResponse.headers.get('content-type') || '';
+                    if (hfResponse.ok && contentType.includes('image')) {
+                        const blob = await hfResponse.blob();
+                        addImageBlobToGallery(blob, prompt);
+                        document.getElementById('prompt').value = '';
+                        showSuccess('Görsel başarıyla oluşturuldu!');
+                    } else {
+                        const hfError = await hfResponse.json().catch(() => ({ error: { message: 'Hugging Face hata yanıtı' } }));
+                        const hfMsg = (typeof hfError.error === 'string' ? hfError.error : hfError.error?.message) || 'Hugging Face API hatası';
+                        throw new Error(hfMsg);
+                    }
                 } else if (provider === 'gemini') {
                     throw new Error('Google Gemini ile doğrudan görsel oluşturma bu arayüzde henüz desteklenmiyor. Yakında eklenecek.');
                 } else if (provider === 'claude') {
@@ -855,6 +879,12 @@
             `;
 
             gallery.insertBefore(card, gallery.firstChild);
+        }
+
+        // Hugging Face gibi blob döndüren sağlayıcılar için yardımcı
+        async function addImageBlobToGallery(blob, prompt) {
+            const blobUrl = URL.createObjectURL(blob);
+            addImageToGallery(blobUrl, prompt);
         }
 
         function downloadImage(url, prompt) {
