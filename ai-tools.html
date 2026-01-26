@@ -479,6 +479,12 @@
             border-radius: 8px;
             margin-bottom: 20px;
             display: none;
+            white-space: pre-line;
+            font-size: 13px;
+            line-height: 1.6;
+            font-family: 'Inter', monospace;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .error-message.show {
@@ -762,6 +768,12 @@
                         throw new Error('Çok fazla istek gönderildi. Lütfen bir dahika bekleyin.');
                     } else if (response.status === 500) {
                         throw new Error('OpenAI sunucusu hatası. Lütfen daha sonra tekrar deneyin.');
+                    } else if (errorMsg.includes('Billing') || errorMsg.includes('hard limit')) {
+                        throw new Error('💳 Billing Limiti Doldu!\n\nOpenAI hesabınızın kredi limiti tükendi.\n\n✅ Çözüm:\n1. https://platform.openai.com/account/billing/overview adresine gidin\n2. Hesabınıza kredi ekleyin veya ödeme yöntemi ekleyin\n3. Usage limitlerini kontrol edin\n4. Tekrar deneyin');
+                    } else if (errorMsg.includes('Quota')) {
+                        throw new Error('📊 Kullanım Limiti Aşıldı\n\nOpenAI hesabınızda ayık kullanım limiti tükendi.\n\n✅ Çözüm:\n1. Hesap ayarlarını kontrol edin\n2. Rate limitlerde kalmış olabilirsiniz\n3. Biraz sonra tekrar deneyin');
+                    } else if (response.status === 403) {
+                        throw new Error('⛔ Erişim Reddedildi\n\nAPI anahtarınızın izinleri kontrol edin.\n\n✅ Çözüm:\n1. API anahtarınızın geçerli olduğundan emin olun\n2. OpenAI panelinde izinleri kontrol edin');
                     } else {
                         throw new Error(errorMsg);
                     }
