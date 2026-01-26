@@ -551,15 +551,24 @@
         <div class="api-section">
             <h3>🔑 API Ayarları</h3>
             <p style="color: #a0a0a0; font-size: 13px; margin-bottom: 15px;">
-                ⚠️ <strong>Güvenlik:</strong> API anahtarınız <strong>sadece tarayıcınızda</strong> saklanır (localStorage). Sunuculara göndermemiz yok. 
-                Gizli tutun ve asla başkasıyla paylaşmayın!
+                🔒 <strong>Gizlilik & Güvenlik:</strong> API anahtarınız <strong>sadece tarayıcınızda</strong> saklanır (localStorage). Hiçbir sunucuya gönderilmez. 
+                Hepsi güvende tutulur, gizliliğinize önem veriyoruz. Anahtarınızı gizli tutun ve asla başkasıyla paylaşmayın!
             </p>
-            <div class="api-input-group">
+            <div style="margin-bottom: 15px;">
+                <input type="text" id="apiKeyName" placeholder="📝 API Anahtarının Adı (örn: MyProject)" value="" style="margin-bottom: 10px;">
                 <input type="password" id="apiKey" placeholder="sk-... (OpenAI API Key)" value="">
-                <button class="btn-save-api" onclick="saveApiKey()">💾 Kaydet</button>
             </div>
+            <button class="btn-save-api" onclick="saveApiKey()">💾 Anahtarı Kaydet</button>
             <div id="successMessage" class="success-message">✓ API anahtarı başarıyla kaydedildi!</div>
             <div id="errorMessage" class="error-message">✗ Bir hata oluştu. Lütfen tekrar deneyin.</div>
+            <div id="savedApiKeyDisplay" style="margin-top: 15px; padding: 15px; background: rgba(74, 222, 128, 0.15); border: 2px solid rgba(74, 222, 128, 0.3); border-radius: 8px; display: none;">
+                <p style="color: #4ade80; margin-bottom: 10px; font-weight: bold;">✓ Kaydedilmiş API Anahtarı</p>
+                <div id="savedKeyInfo" style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                    <p style="color: #a0a0a0; margin: 5px 0;"><strong>Ad:</strong> <span id="savedKeyName" style="color: #4ade80;"></span></p>
+                    <p style="color: #a0a0a0; margin: 5px 0;"><strong>Anahtarı:</strong> <span style="color: #4ade80;">••••••••••••••••••••••••••</span> (Gizli)</p>
+                </div>
+                <button class="btn-delete" onclick="clearSavedApiKey()" style="width: 100%; padding: 8px; margin-top: 8px;">🔄 Anahtarı Değiştir</button>
+            </div>
         </div>
 
         <!-- Input Section -->
@@ -593,16 +602,9 @@
 
         <!-- API Anahtarı Nerede Tutulduğu Bilgisi -->
         <div class="info-box">
-            <strong>💾 API Anahtarınız Nerede Tutulur?</strong><br>
+            <strong>💾 Nerede Tutulur?</strong><br>
             Kaydettiğiniz API anahtarı tarayıcınızın <strong>localStorage</strong> adlı yerel veri tabanında saklanır. 
-            Sunucularına hiç gönderilmez! Görsel oluşturma işi direkt OpenAI API'sine yapılır.<br><br>
-            
-            <strong>📍 Nerede Buldunuz:</strong><br>
-            • Chrome/Edge: F12 → Application → Local Storage → http://localhost:8000<br>
-            • Firefox: F12 → Storage → Local Storage<br>
-            • İçinde <code>donerAI_apiKey</code> adlı anahtar vardır.<br><br>
-            
-            <strong>🔒 Dikkat:</strong> API anahtarınızı başkasıyla paylaşmayın!
+            Hiçbir sunucuya gönderilmez! Tüm görsel oluşturma işi direkt OpenAI'nin API'sine yapılır. Verileriniz tamamen güvenlidir.
         </div>
     </div>
 
@@ -635,19 +637,35 @@
 
         // API Key Management
         const apiKeyInput = document.getElementById('apiKey');
+        const apiKeyNameInput = document.getElementById('apiKeyName');
         const successMsg = document.getElementById('successMessage');
         const errorMsg = document.getElementById('errorMessage');
+        const savedApiKeyDisplay = document.getElementById('savedApiKeyDisplay');
+        const savedKeyInfo = document.getElementById('savedKeyInfo');
 
         // Load saved API key on page load
         window.addEventListener('load', () => {
             const savedKey = localStorage.getItem('donerAI_apiKey');
-            if (savedKey) {
-                apiKeyInput.value = savedKey;
+            const savedKeyName = localStorage.getItem('donerAI_apiKeyName');
+            
+            if (savedKey && savedKeyName) {
+                // Gizli modu aç
+                apiKeyInput.style.display = 'none';
+                apiKeyNameInput.style.display = 'none';
+                document.querySelector('.btn-save-api').style.display = 'none';
+                savedApiKeyDisplay.style.display = 'block';
+                document.getElementById('savedKeyName').textContent = savedKeyName;
             }
         });
 
         function saveApiKey() {
             const apiKey = apiKeyInput.value.trim();
+            const apiKeyName = apiKeyNameInput.value.trim();
+            
+            if (!apiKeyName) {
+                showError('Lütfen API anahtarının adını girin');
+                return;
+            }
             
             if (!apiKey) {
                 showError('Lütfen API anahtarını girin');
@@ -660,11 +678,35 @@
             }
 
             localStorage.setItem('donerAI_apiKey', apiKey);
+            localStorage.setItem('donerAI_apiKeyName', apiKeyName);
             showSuccess('API anahtarı başarıyla kaydedildi!');
             
+            // UI güncelle
             setTimeout(() => {
                 successMsg.classList.remove('show');
-            }, 3000);
+                apiKeyInput.style.display = 'none';
+                apiKeyNameInput.style.display = 'none';
+                document.querySelector('.btn-save-api').style.display = 'none';
+                document.getElementById('savedKeyName').textContent = apiKeyName;
+                savedApiKeyDisplay.style.display = 'block';
+            }, 500);
+        }
+
+        function clearSavedApiKey() {
+            if (confirm('Bu API anahtarını silmek istediğinizden emin misiniz?')) {
+                localStorage.removeItem('donerAI_apiKey');
+                localStorage.removeItem('donerAI_apiKeyName');
+                apiKeyInput.value = '';
+                apiKeyNameInput.value = '';
+                apiKeyInput.style.display = 'block';
+                apiKeyNameInput.style.display = 'block';
+                document.querySelector('.btn-save-api').style.display = 'block';
+                savedApiKeyDisplay.style.display = 'none';
+                showSuccess('API anahtarı silindi. Yeni bir anahtarı kaydedebilirsiniz.');
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
+            }
         }
 
         function showSuccess(message) {
@@ -796,6 +838,12 @@
 
         // Enter key support for API key
         apiKeyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveApiKey();
+            }
+        });
+
+        apiKeyNameInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 saveApiKey();
             }
