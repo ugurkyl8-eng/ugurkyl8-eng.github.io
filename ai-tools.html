@@ -587,8 +587,9 @@
             <div style="margin-bottom: 15px; display: grid; grid-template-columns: 1fr; gap: 10px;">
                 <select id="providerSelect" style="padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f7f7f7;">
                     <option value="openai">OpenAI (DALL·E)</option>
+                    <option value="replicate">Replicate (Stable Diffusion)</option>
                     <option value="huggingface">Hugging Face (Stable Diffusion)</option>
-                    <option value="gemini">Google Gemini</option>
+                    <option value="gemini">Google Gemini (Metin Analizi)</option>
                     <option value="claude">Anthropic Claude</option>
                     <option value="grok">xAI Grok</option>
                 </select>
@@ -716,8 +717,9 @@
         function providerLabel(value) {
             switch (value) {
                 case 'openai': return 'OpenAI (DALL·E)';
+                case 'replicate': return 'Replicate (Stable Diffusion)';
                 case 'huggingface': return 'Hugging Face (Stable Diffusion)';
-                case 'gemini': return 'Google Gemini';
+                case 'gemini': return 'Google Gemini (Metin Analizi)';
                 case 'claude': return 'Anthropic Claude';
                 case 'grok': return 'xAI Grok';
                 default: return value;
@@ -790,10 +792,10 @@
 
         // Bizim Gemini Key'ini kullan
         function useOurGeminiKey() {
-            const geminiKey = 'AIzaSyBFz7uip409vyDD2VizNNNi0plJtxp9snM';
-            localStorage.setItem('donerAI_apiKey', geminiKey);
-            localStorage.setItem('donerAI_apiKeyName', 'GEMINI_API_KEY');
-            localStorage.setItem('donerAI_provider', 'gemini');
+            const replicateKey = 'r8_c4NUSWNjSZQG4wJPmEFPNQZEp9L0p7GHVmTgz';
+            localStorage.setItem('donerAI_apiKey', replicateKey);
+            localStorage.setItem('donerAI_apiKeyName', 'REPLICATE_API_KEY');
+            localStorage.setItem('donerAI_provider', 'replicate');
             
             // UI'yı güncelle
             apiKeyInput.style.display = 'none';
@@ -801,8 +803,8 @@
             providerSelect.style.display = 'none';
             document.querySelector('.btn-save-api').style.display = 'none';
             savedApiKeyDisplay.style.display = 'block';
-            document.getElementById('savedKeyName').textContent = 'GEMINI_API_KEY';
-            document.getElementById('savedProviderName').textContent = 'Google Gemini';
+            document.getElementById('savedKeyName').textContent = 'REPLICATE_API_KEY';
+            document.getElementById('savedProviderName').textContent = 'Replicate (Stable Diffusion)';
             document.getElementById('useOurKeyMessage').style.display = 'none';
             
             // Değiştir butonunu gizle (bizim keyimiz için)
@@ -811,7 +813,7 @@
                 changeBtn.style.display = 'none';
             }
             
-            showSuccess('✨ Gemini API keyimiz aktif edildi! Görsel oluşturmaya başlayabilirsiniz.');
+            showSuccess('✨ Replicate API keyimiz aktif edildi! Görsel oluşturmaya başlayabilirsiniz.');
             setTimeout(() => {
                 successMsg.classList.remove('show');
             }, 3000);
@@ -972,7 +974,58 @@
                     addImageToGallery(dataUrl, prompt);
                     document.getElementById('prompt').value = '';
                     showSuccess('Görsel başarıyla oluşturuldu!');
-                } else if (provider === 'claude') {
+                } else if (provider === 'replicate') {
+                    // Replicate API - Stable Diffusion
+                    let replicateResponse;
+                    try {
+                        replicateResponse = await fetch('https://api.replicate.com/v1/predictions', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${apiKey}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                version: 'db21e45d3f7023abc9e46f5955aae626caee30299ffd6ff9abdee3b50b4d67a9',
+                                input: { prompt: prompt }
+                            })
+                        });
+                    } catch (fetchErr) {
+                        throw new Error('🌐 Replicate\'e Bağlanılamadı\n\nLütfen:\n1. İnternet bağlantınızı kontrol edin\n2. VPN/Proxy devre dışı bırakın\n3. API anahtarının geçerli olduğundan emin olun\n4. Tekrar deneyin');
+                    }
+
+                    if (!replicateResponse.ok) {
+                        const rErr = await replicateResponse.json().catch(() => ({ detail: 'Replicate API hatası' }));
+                        const rMsg = rErr.detail || 'Replicate API hatası';
+                        throw new Error(rMsg);
+                    }
+
+                    const rData = await replicateResponse.json();
+                    const predictionId = rData.id;
+
+                    // Görsel oluşması için poll yap
+                    let prediction = rData;
+                    let attempts = 0;
+                    while (prediction.status === 'processing' && attempts < 120) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        try {
+                            const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
+                                headers: { 'Authorization': `Bearer ${apiKey}` }
+                            });
+                            if (pollRes.ok) {
+                                prediction = await pollRes.json();
+                            }
+                        } catch (_) {}
+                        attempts++;
+                    }
+
+                    if (prediction.status === 'succeeded' && prediction.output && prediction.output.length > 0) {
+                        const imageUrl = prediction.output[0];
+                        addImageToGallery(imageUrl, prompt);
+                        document.getElementById('prompt').value = '';
+                        showSuccess('Görsel başarıyla oluşturuldu!');
+                    } else {
+                        throw new Error('Replicate görsel oluşturalamadı. Lütfen tekrar deneyin.');
+                    }
                     throw new Error('Anthropic Claude şu an görsel üretimi sunmuyor; metin ve görsel analiz odaklıdır.');
                 } else if (provider === 'grok') {
                     throw new Error('xAI Grok metin odaklıdır, görsel oluşturma desteği yok.');
