@@ -1,0 +1,69 @@
+/* Döner AI - Koyu Tema Ortak Stil */
+:root {
+  --bg: #0d1117;
+  --card: rgba(22, 27, 34, 0.85);
+  --border: rgba(255, 255, 255, 0.12);
+  --text: #e6edf3;
+  --muted: #9aa4ad;
+  --accent: #9f7aea;
+  --success: #4ade80;
+  --warn: #ffc107;
+  --danger: #ff6b6b;
+}
+
+html, body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* Kart benzeri ana kaplar */
+.container,
+.game-container,
+.empty-page {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+h1, h2, h3 {
+  color: var(--text) !important;
+}
+
+p, li, label, span {
+  color: var(--text);
+}
+
+.subtitle,
+.stat-label {
+  color: var(--muted) !important;
+}
+
+/* Genel butonlar (varsa) */
+button {
+  color: var(--text);
+}
+
+/* Menü koyu arka planı zaten koyu, metin kontrastını koru */
+.menu a {
+  color: #ffffff;
+}
+
+/* Galeri kartları (ai-tools) uyumlu olsun */
+.image-card {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: var(--border) !important;
+}
+
+.image-card-prompt {
+  color: var(--muted) !important;
+}
+
+/* Küçük bilgi kutuları uyumu */
+.info-box {
+  color: #42b8dd;
+  border-color: rgba(66, 184, 221, 0.35);
+}
+
+/* Uyarı/başarı metinleri */
+.success-message { color: var(--success); border-color: var(--success); }
+.error-message { color: var(--danger); border-color: var(--danger); }

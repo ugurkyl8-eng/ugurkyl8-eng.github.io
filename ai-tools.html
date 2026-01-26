@@ -6,6 +6,7 @@
     <title>Döner AI - Prompt To Image</title>
     <link rel="icon" type="image/webp" href="IMG_20260120_134136_893.webp">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
     <style>
         * {
             margin: 0;
@@ -702,9 +703,13 @@
                 return;
             }
 
-            // Basit doğrulama: OpenAI için sk- prefix; diğerleri için sadece boş olmaması
+            // Basit doğrulama: OpenAI ve Hugging Face için prefix kontrolü
             if (provider === 'openai' && !apiKey.startsWith('sk-')) {
                 showError('Geçersiz API anahtarı. Lütfen OpenAI anahtarını kontrol edin.');
+                return;
+            }
+            if (provider === 'huggingface' && !apiKey.startsWith('hf_')) {
+                showError('Geçersiz API anahtarı. Lütfen Hugging Face anahtarını kontrol edin.');
                 return;
             }
 
@@ -840,7 +845,51 @@
                         throw new Error(hfMsg);
                     }
                 } else if (provider === 'gemini') {
-                    throw new Error('Google Gemini ile doğrudan görsel oluşturma bu arayüzde henüz desteklenmiyor. Yakında eklenecek.');
+                    // Google Generative Language API - Image Generation (v1beta)
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagegeneration:generateImage?key=${encodeURIComponent(apiKey)}`;
+                    const gResponse = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            prompt: { text: prompt }
+                        })
+                    });
+
+                    if (!gResponse.ok) {
+                        const gErr = await gResponse.json().catch(() => ({ error: { message: 'Google Gemini API hatası' } }));
+                        const gMsg = gErr.error?.message || 'Google Gemini API hatası';
+                        throw new Error(gMsg);
+                    }
+
+                    const gData = await gResponse.json();
+                    let base64 = null;
+                    let mime = 'image/png';
+
+                    // Olası yanıt biçimleri için esnek ayrıştırma
+                    try {
+                        if (gData?.generatedImages?.[0]?.image?.bytesBase64Encoded) {
+                            base64 = gData.generatedImages[0].image.bytesBase64Encoded;
+                            mime = 'image/png';
+                        } else if (gData?.images?.[0]?.data) {
+                            base64 = gData.images[0].data;
+                            mime = gData.images[0].mimeType || 'image/png';
+                        } else if (gData?.candidates?.[0]?.content?.parts) {
+                            const part = gData.candidates[0].content.parts.find(p => p.inlineData && p.inlineData.data);
+                            if (part) {
+                                base64 = part.inlineData.data;
+                                mime = part.inlineData.mimeType || 'image/png';
+                            }
+                        }
+                    } catch (_) {}
+
+                    if (!base64) {
+                        throw new Error('Gemini yanıtı beklenen görsel verisini içermiyor.');
+                    }
+
+                    const dataUrl = `data:${mime};base64,${base64}`;
+                    addImageToGallery(dataUrl, prompt);
+                    document.getElementById('prompt').value = '';
+                    showSuccess('Görsel başarıyla oluşturuldu!');
                 } else if (provider === 'claude') {
                     throw new Error('Anthropic Claude şu an görsel üretimi sunmuyor; metin ve görsel analiz odaklıdır.');
                 } else if (provider === 'grok') {
