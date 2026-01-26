@@ -25,18 +25,20 @@
             justify-content: center;
             color: #f7f7f7;
             text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
-            overflow: hidden;
+            padding-bottom: 180px;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         /* Hamburger Menü */
         .hamburger {
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 10px;
+            left: 10px;
             z-index: 1000;
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.5);
-            padding: 10px 15px;
+            padding: 8px 12px;
             cursor: pointer;
             border-radius: 5px;
             transition: all 0.3s ease;
@@ -106,11 +108,11 @@
         /* Hakkımızda - Sağ Üst */
         .about-btn {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 10px;
+            right: 10px;
             background: transparent;
             color: #f7f7f7;
-            padding: 12px 20px;
+            padding: 8px 16px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 5px;
             cursor: pointer;
@@ -119,6 +121,7 @@
             z-index: 100;
             text-decoration: none;
             backdrop-filter: blur(2px);
+            font-size: 14px;
         }
 
         .about-btn:hover {
@@ -155,6 +158,8 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             position: relative;
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         h1 {
@@ -231,23 +236,57 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding-bottom: 200px;
+                justify-content: flex-start;
+                padding-top: 70px;
+            }
+
             .container {
-                padding: 40px 25px;
+                padding: 25px 20px;
+                margin-top: 10px;
+                margin-bottom: 20px;
             }
 
             h1 {
-                font-size: 24px;
+                font-size: 22px;
             }
 
             .memories-btn {
-                padding: 12px 30px;
-                font-size: 16px;
+                padding: 10px 25px;
+                font-size: 14px;
+            }
+
+            .social-footer {
+                flex-wrap: wrap;
+                gap: 15px;
             }
 
             .social-icon {
                 width: 40px;
                 height: 40px;
+                font-size: 14px;
+            }
+
+            .social-icon img {
+                width: 25px;
+                height: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
                 font-size: 18px;
+            }
+
+            .hamburger span {
+                width: 20px;
+                height: 2px;
+            }
+
+            .about-btn {
+                padding: 6px 12px;
+                font-size: 11px;
             }
         }
     </style>
@@ -402,15 +441,16 @@
     </script>
 
     <!-- Dino Oyunu -->
-    <div style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.8); padding: 10px; text-align: center; z-index: 999;">
+    <div id="gameContainer" style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.8); padding: 10px; text-align: center; z-index: 999;">
         <p style="color: white; font-size: 12px; margin-bottom: 5px;">Sıkılmamanız için sizin için küçük bir oyun</p>
-        <canvas id="dinoGame" width="600" height="150" style="background: #f7f7f7; border-radius: 5px; display: block; margin: 0 auto;"></canvas>
+        <canvas id="dinoGame" width="600" height="150" style="background: #f7f7f7; border-radius: 5px; display: block; margin: 0 auto; width: 100%; max-width: 600px;"></canvas>
         <div id="score" style="position: absolute; top: 15px; right: 20px; color: white; font-weight: bold; font-size: 16px;">Puan: 0</div>
     </div>
 
     <script>
         const canvas = document.getElementById('dinoGame');
         const ctx = canvas.getContext('2d');
+        const gameContainer = document.getElementById('gameContainer');
 
         let score = 0;
         let gameSpeed = 6;
@@ -420,6 +460,7 @@
         let jumpPower = 0;
         let isDay = true;
         let frameCount = 0;
+        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         // Dino
         const dino = {
@@ -582,14 +623,36 @@
             gameLoop();
         }
 
-        // Kontroller
-        document.addEventListener('click', (e) => {
-            if (gameOver) {
-                resetGame();
-            } else {
-                dino.jump();
-            }
-        });
+        // Kontroller - Mobil ve Masaüstü desteği
+        if (isMobile) {
+            // Mobilde herhangi bir yere basınca zıpla
+            document.addEventListener('touchstart', (e) => {
+                // Hamburger menü, hakkımızda butonu ve saçak öğelere tıklanmasını engelle
+                if (e.target.closest('.hamburger') || e.target.closest('.about-btn') || e.target.closest('a')) {
+                    return;
+                }
+                
+                if (gameOver) {
+                    resetGame();
+                } else {
+                    dino.jump();
+                }
+            }, { passive: true });
+        } else {
+            // Masaüstünde click veya keyboard
+            document.addEventListener('click', (e) => {
+                // Hamburger menü, hakkımızda butonu ve saçak öğelere tıklanmasını engelle
+                if (e.target.closest('.hamburger') || e.target.closest('.about-btn') || e.target.closest('a')) {
+                    return;
+                }
+                
+                if (gameOver) {
+                    resetGame();
+                } else {
+                    dino.jump();
+                }
+            });
+        }
 
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
