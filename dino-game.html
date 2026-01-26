@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Döner AI Dinozor Oyunu</title>
+    <link rel="icon" type="image/webp" href="IMG_20260120_134136_893.webp">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('444ed40d944d995410f417a945372e6f.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f7f7f7;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: rgba(26, 58, 82, 0.85);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 900px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .game-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffc107;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 30px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+        }
+
+        .stat-value {
+            color: #4ade80;
+            font-size: 20px;
+        }
+
+        .record-value {
+            color: #ff6b6b;
+        }
+
+        #gameCanvas {
+            display: block;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin: 20px 0;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: rgba(255, 193, 7, 0.2);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: transparent;
+            color: #ffc107;
+            text-decoration: none;
+            border: 2px solid #ffc107;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .instructions {
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #ffc107;
+        }
+
+        .game-over-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-over-content {
+            background: rgba(26, 58, 82, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            border: 2px solid #ffc107;
+            max-width: 400px;
+        }
+
+        .game-over-title {
+            font-size: 32px;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .game-over-score {
+            font-size: 24px;
+            color: #4ade80;
+            margin-bottom: 10px;
+        }
+
+        .game-over-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .game-over-buttons button {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+            }
+
+            .game-title {
+                font-size: 22px;
+            }
+
+            .game-stats {
+                gap: 15px;
+            }
+
+            .stat-label,
+            .stat-value {
+                font-size: 14px;
+            }
+
+            #gameCanvas {
+                border-width: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="game-title">🦕 Döner AI Dinozor Oyunu</div>
+            <div class="game-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Puan:</span>
+                    <span class="stat-value" id="score">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Rekor:</span>
+                    <span class="stat-value record-value" id="record">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button id="startBtn" onclick="startGame()">▶️ BAŞLAT</button>
+            <button id="pauseBtn" onclick="togglePause()" disabled>⏸️ DURAKLAT</button>
+            <button id="resetBtn" onclick="resetGame()">🔄 SIFIRLA</button>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="300"></canvas>
+
+        <div class="instructions">
+            <strong>Talimatlar:</strong> BAŞLAT butonuna basın → SPACE veya ↑ tuşu ile zıplayın → Kuşlardan ve kaktüslerden kaçının → 
+            Oyun git gide hızlanır! 🚀
+        </div>
+
+        <a href="index.html" class="back-link">← Ana Sayfaya Dön</a>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div class="game-over-screen" id="gameOverScreen">
+        <div class="game-over-content">
+            <div class="game-over-title">OYUN BİTTİ!</div>
+            <div class="game-over-score">Puan: <span id="finalScore">0</span></div>
+            <div id="newRecord" style="color: #ffc107; font-size: 16px; margin-bottom: 10px; display: none;">
+                🎉 YENİ REKOR! 🎉
+            </div>
+            <div class="game-over-buttons">
+                <button onclick="startGame()">Tekrar Oyna</button>
+                <button onclick="goHome()">Ana Sayfa</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Oyun değişkenleri
+        let gameRunning = false;
+        let gamePaused = false;
+        let gameSpeed = 1;
+        let score = 0;
+        let record = localStorage.getItem('dinoGameRecord') || 0;
+        let startTime = 0;
+        let pausedTime = 0;
+
+        // Dinozor
+        const dino = {
+            x: 50,
+            y: 0,
+            width: 40,
+            height: 50,
+            velocityY: 0,
+            jumping: false,
+            emoji: '🦕'
+        };
+
+        // Engeller
+        let obstacles = [];
+        let obstacleCount = 0;
+
+        // Updaterecord display
+        document.getElementById('record').textContent = record;
+
+        // Dinazoru draw et
+        function drawDino() {
+            ctx.font = dino.width + 'px Arial';
+            ctx.fillText(dino.emoji, dino.x, dino.y + dino.height);
+        }
+
+        // Engel oluştur
+        function createObstacle() {
+            const type = Math.random() > 0.6 ? 'bird' : 'cactus';
+            const obstacle = {
+                x: canvas.width,
+                y: type === 'bird' ? Math.random() * 100 + 50 : canvas.height - 80,
+                width: 30,
+                height: 50,
+                type: type,
+                emoji: type === 'bird' ? '🦅' : '🌵'
+            };
+            obstacles.push(obstacle);
+        }
+
+        // Engel draw et
+        function drawObstacles() {
+            obstacles.forEach((obstacle, index) => {
+                obstacle.x -= 5 * gameSpeed;
+                ctx.font = obstacle.width + 'px Arial';
+                ctx.fillText(obstacle.emoji, obstacle.x, obstacle.y + obstacle.height);
+
+                // Çarpışma kontrolü
+                if (checkCollision(dino, obstacle)) {
+                    endGame();
+                }
+
+                // Ekrandan çıkan engelleri sil
+                if (obstacle.x + obstacle.width < 0) {
+                    obstacles.splice(index, 1);
+                }
+            });
+        }
+
+        // Çarpışma kontrolü
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+
+        // Zıplama fizikleri
+        function updateDino() {
+            if (dino.jumping) {
+                dino.velocityY -= 0.6; // Yer çekimi
+                dino.y += dino.velocityY;
+
+                if (dino.y >= canvas.height - 100) {
+                    dino.y = canvas.height - 100;
+                    dino.jumping = false;
+                    dino.velocityY = 0;
+                }
+            }
+        }
+
+        // Puan sistemi (zamana göre)
+        function updateScore() {
+            if (gameRunning && !gamePaused) {
+                const elapsedSeconds = (Date.now() - startTime - pausedTime) / 1000;
+                score = Math.floor(elapsedSeconds * 10);
+                document.getElementById('score').textContent = score;
+
+                // Hız artışı
+                gameSpeed = 1 + (elapsedSeconds / 50);
+            }
+        }
+
+        // Oyun loop
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            // Canvas temizle
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Yer çizgi
+            ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - 50);
+            ctx.lineTo(canvas.width, canvas.height - 50);
+            ctx.stroke();
+
+            if (!gamePaused) {
+                updateDino();
+                updateScore();
+
+                // Engel oluştur
+                obstacleCount++;
+                if (obstacleCount > Math.max(50 - gameSpeed * 5, 20)) {
+                    createObstacle();
+                    obstacleCount = 0;
+                }
+
+                drawObstacles();
+            }
+
+            drawDino();
+
+            // Hız göster
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.font = '12px Arial';
+            ctx.fillText('Hız: ' + gameSpeed.toFixed(2) + 'x', 10, 20);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Oyun başlat
+        function startGame() {
+            if (gameRunning && !gamePaused) return;
+
+            if (!gameRunning) {
+                gameRunning = true;
+                gamePaused = false;
+                score = 0;
+                obstacles = [];
+                obstacleCount = 0;
+                gameSpeed = 1;
+                startTime = Date.now();
+                pausedTime = 0;
+
+                dino.y = canvas.height - 100;
+                dino.velocityY = 0;
+                dino.jumping = false;
+
+                document.getElementById('score').textContent = '0';
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+                document.getElementById('gameOverScreen').style.display = 'none';
+
+                gameLoop();
+            } else if (gamePaused) {
+                gamePaused = false;
+                startTime = Date.now() - (startTime + pausedTime);
+                pausedTime = 0;
+                document.getElementById('pauseBtn').textContent = '⏸️ DURAKLAT';
+                gameLoop();
+            }
+        }
+
+        // Oyunu duraklat
+        function togglePause() {
+            if (!gameRunning) return;
+
+            if (!gamePaused) {
+                gamePaused = true;
+                pausedTime = Date.now() - startTime;
+                document.getElementById('pauseBtn').textContent = '▶️ DEVAM ET';
+            } else {
+                gamePaused = false;
+                startTime = Date.now() - pausedTime;
+                document.getElementById('pauseBtn').textContent = '⏸️ DURAKLAT';
+                gameLoop();
+            }
+        }
+
+        // Oyun sıfırla
+        function resetGame() {
+            gameRunning = false;
+            gamePaused = false;
+            gameSpeed = 1;
+            score = 0;
+            startTime = 0;
+            pausedTime = 0;
+            obstacles = [];
+            obstacleCount = 0;
+
+            dino.y = canvas.height - 100;
+            dino.velocityY = 0;
+            dino.jumping = false;
+
+            document.getElementById('score').textContent = '0';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('pauseBtn').textContent = '⏸️ DURAKLAT';
+            document.getElementById('gameOverScreen').style.display = 'none';
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - 50);
+            ctx.lineTo(canvas.width, canvas.height - 50);
+            ctx.stroke();
+        }
+
+        // Oyun bitir
+        function endGame() {
+            gameRunning = false;
+
+            // Rekor kontrol
+            if (score > record) {
+                record = score;
+                localStorage.setItem('dinoGameRecord', record);
+                document.getElementById('record').textContent = record;
+                document.getElementById('newRecord').style.display = 'block';
+            } else {
+                document.getElementById('newRecord').style.display = 'none';
+            }
+
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('gameOverScreen').style.display = 'flex';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+        }
+
+        // Ana sayfaya git
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+
+        // Klavye kontrolü
+        document.addEventListener('keydown', (event) => {
+            if ((event.code === 'Space' || event.key === 'ArrowUp') && gameRunning && !gamePaused) {
+                event.preventDefault();
+                if (!dino.jumping) {
+                    dino.jumping = true;
+                    dino.velocityY = 15;
+                    playSound('jump');
+                }
+            }
+        });
+
+        // Mobil tap kontrolü
+        canvas.addEventListener('click', () => {
+            if (gameRunning && !gamePaused) {
+                if (!dino.jumping) {
+                    dino.jumping = true;
+                    dino.velocityY = 15;
+                    playSound('jump');
+                }
+            }
+        });
+
+        // Ses efektleri (opsiyonel - Web Audio API)
+        function playSound(type) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                if (type === 'jump') {
+                    oscillator.frequency.value = 400;
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                } else if (type === 'collision') {
+                    oscillator.frequency.value = 200;
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                }
+            } catch (e) {
+                // Ses başarısız olursa sessiz kalsın
+            }
+        }
+
+        // Başlangıç
+        resetGame();
+    </script>
+</body>
+</html>
