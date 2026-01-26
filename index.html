@@ -17,8 +17,9 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: url('444ed40d944d995410f417a945372e6f.jpg');
             background-size: cover;
-            background-position: center;
+            background-position: center center;
             background-attachment: fixed;
+            background-repeat: no-repeat;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -440,9 +441,15 @@
         });
     </script>
 
+    <!-- Oyunu Göster Butonu -->
+    <div id="showGameBtn" style="position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 1001; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 12px 30px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); transition: all 0.3s ease;">
+        🎮 Oyunu Göster
+    </div>
+
     <!-- Dino Oyunu -->
-    <div id="gameContainer" style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.8); padding: 10px; text-align: center; z-index: 999;">
-        <p style="color: white; font-size: 12px; margin-bottom: 5px;">Sıkılmamanız için sizin için küçük bir oyun</p>
+    <div id="gameContainer" style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.8); padding: 10px; text-align: center; z-index: 999; display: none;">
+        <button id="hideGameBtn" style="position: absolute; top: 5px; right: 10px; background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">✕</button>
+        <p style="color: white; font-size: 12px; margin-bottom: 5px; margin-top: 15px;">Sıkılmamanız için sizin için küçük bir oyun</p>
         <canvas id="dinoGame" width="600" height="150" style="background: #f7f7f7; border-radius: 5px; display: block; margin: 0 auto; width: 100%; max-width: 600px;"></canvas>
         <div id="score" style="position: absolute; top: 15px; right: 20px; color: white; font-weight: bold; font-size: 16px;">Puan: 0</div>
     </div>
@@ -625,27 +632,18 @@
 
         // Kontroller - Mobil ve Masaüstü desteği
         if (isMobile) {
-            // Mobilde herhangi bir yere basınca zıpla
-            document.addEventListener('touchstart', (e) => {
-                // Hamburger menü, hakkımızda butonu ve saçak öğelere tıklanmasını engelle
-                if (e.target.closest('.hamburger') || e.target.closest('.about-btn') || e.target.closest('a')) {
-                    return;
-                }
-                
+            // Mobilde SADECE canvas'a basınca zıpla
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
                 if (gameOver) {
                     resetGame();
                 } else {
                     dino.jump();
                 }
-            }, { passive: true });
+            }, { passive: false });
         } else {
-            // Masaüstünde click veya keyboard
-            document.addEventListener('click', (e) => {
-                // Hamburger menü, hakkımızda butonu ve saçak öğelere tıklanmasını engelle
-                if (e.target.closest('.hamburger') || e.target.closest('.about-btn') || e.target.closest('a')) {
-                    return;
-                }
-                
+            // Masaüstünde canvas'a click
+            canvas.addEventListener('click', (e) => {
                 if (gameOver) {
                     resetGame();
                 } else {
