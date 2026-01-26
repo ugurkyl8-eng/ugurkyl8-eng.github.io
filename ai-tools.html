@@ -586,8 +586,9 @@
             </p>
             <div style="margin-bottom: 15px; display: grid; grid-template-columns: 1fr; gap: 10px;">
                 <select id="providerSelect" style="padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f7f7f7;">
+                    <option value="pollinations">Ücretsiz (Pollinations) ✓</option>
                     <option value="openai">OpenAI (DALL·E)</option>
-                    <option value="huggingface">Hugging Face (Stable Diffusion) ✓</option>
+                    <option value="huggingface">Hugging Face (Stable Diffusion)</option>
                     <option value="replicate" disabled>Replicate (CORS Sorunu)</option>
                     <option value="gemini" disabled>Google Gemini (Görsel yok)</option>
                     <option value="claude" disabled>Anthropic Claude (Görsel yok)</option>
@@ -610,13 +611,20 @@
             </div>
         </div>
 
-        <!-- Bizim Key'i Kullan Mesajı -->
-        <div id="useOurKeyMessage" style="display: none; background: rgba(255, 193, 7, 0.15); border: 2px solid rgba(255, 193, 7, 0.4); border-radius: 10px; padding: 20px; margin-bottom: 20px; text-align: center;">
-            <p style="color: #ffc107; margin-bottom: 15px; font-weight: bold; font-size: 16px;">🔑 API Anahtarınız Yok</p>
-            <p style="color: #a0a0a0; margin-bottom: 20px;">Görsel oluşturmak için API anahtarı gerekmektedir. Bizim ücretsiz Gemini API'mizi kullanabilirsiniz!</p>
-            <button onclick="useOurGeminiKey()" style="background: linear-gradient(135deg, #ffc107, #ff9800); color: #000; padding: 12px 30px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
-                ✨ Bizim API Key'i Kullan
+        <!-- Ücretsiz Kullanım Rehberi -->
+        <div id="useOurKeyMessage" style="display: none; background: rgba(16, 185, 129, 0.15); border: 2px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+            <p style="color: #10b981; margin-bottom: 10px; font-weight: bold; font-size: 16px;">🆓 Ücretsiz Kullanım</p>
+            <p style="color: #a0a0a0; margin-bottom: 12px;">API key olmadan kullanmak için ücretsiz sağlayıcıyı seçebilirsiniz.</p>
+            <button onclick="useFreeProvider()" style="background: linear-gradient(135deg, #10b981, #059669); color: #000; padding: 10px 20px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
+                ✨ Ücretsiz Sağlayıcıyı Kullan
             </button>
+            <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 16px 0;">
+            <p style="color: #a0a0a0; margin-bottom: 10px;">Hugging Face ile kullanmak isterseniz:</p>
+            <ol style="color: #a0a0a0; padding-left: 18px; line-height: 1.8; margin: 0;">
+                <li><a href="https://huggingface.co/join" target="_blank" style="color: #10b981;">huggingface.co/join</a> adresinden ücretsiz hesap açın</li>
+                <li><a href="https://huggingface.co/settings/tokens" target="_blank" style="color: #10b981;">huggingface.co/settings/tokens</a> sayfasından “Read” token oluşturun</li>
+                <li><code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">hf_</code> ile başlayan key’i kaydedin</li>
+            </ol>
         </div>
 
         <!-- Input Section -->
@@ -696,14 +704,14 @@
         window.addEventListener('load', () => {
             const savedKey = localStorage.getItem('donerAI_apiKey');
             const savedKeyName = localStorage.getItem('donerAI_apiKeyName');
-            let savedProvider = localStorage.getItem('donerAI_provider') || 'openai';
+            let savedProvider = localStorage.getItem('donerAI_provider') || 'pollinations';
 
-            // Gemini görsel üretimi desteklenmiyor → kayıtlı gemini ayarını temizle
-            if (savedProvider === 'gemini') {
+            // Gemini/Replicate görsel üretimi desteklenmiyor → kayıtlı ayarı temizle
+            if (savedProvider === 'gemini' || savedProvider === 'replicate') {
                 localStorage.removeItem('donerAI_apiKey');
                 localStorage.removeItem('donerAI_apiKeyName');
-                localStorage.setItem('donerAI_provider', 'replicate');
-                showError('Google Gemini görsel üretimini desteklemiyor. Lütfen Replicate seçin veya “Bizim API Key” butonunu kullanın.');
+                localStorage.setItem('donerAI_provider', 'pollinations');
+                showError('Bu sağlayıcı şu anda desteklenmiyor. Ücretsiz sağlayıcıyı seçebilirsiniz.');
                 document.getElementById('useOurKeyMessage').style.display = 'block';
                 return;
             }
@@ -726,6 +734,7 @@
 
         function providerLabel(value) {
             switch (value) {
+                case 'pollinations': return 'Ücretsiz (Pollinations)';
                 case 'openai': return 'OpenAI (DALL·E)';
                 case 'replicate': return 'Replicate (Stable Diffusion)';
                 case 'huggingface': return 'Hugging Face (Stable Diffusion)';
@@ -737,9 +746,14 @@
         }
 
         function saveApiKey() {
-            const apiKey = apiKeyInput.value.trim();
-            const apiKeyName = apiKeyNameInput.value.trim();
+            let apiKey = apiKeyInput.value.trim();
+            let apiKeyName = apiKeyNameInput.value.trim();
             const provider = providerSelect.value;
+
+            if (provider === 'pollinations') {
+                apiKey = 'public';
+                apiKeyName = 'POLLINATIONS';
+            }
             
             if (provider === 'gemini') {
                 showError('Google Gemini şu anda görsel üretimi desteklemiyor. Lütfen Hugging Face veya OpenAI seçin.');
@@ -796,7 +810,7 @@
                 localStorage.removeItem('donerAI_provider');
                 apiKeyInput.value = '';
                 apiKeyNameInput.value = '';
-                providerSelect.value = 'openai';
+                providerSelect.value = 'pollinations';
                 apiKeyInput.style.display = 'block';
                 apiKeyNameInput.style.display = 'block';
                 providerSelect.style.display = 'block';
@@ -808,6 +822,26 @@
                     successMsg.classList.remove('show');
                 }, 3000);
             }
+        }
+
+        function useFreeProvider() {
+            localStorage.setItem('donerAI_apiKey', 'public');
+            localStorage.setItem('donerAI_apiKeyName', 'POLLINATIONS');
+            localStorage.setItem('donerAI_provider', 'pollinations');
+
+            apiKeyInput.style.display = 'none';
+            apiKeyNameInput.style.display = 'none';
+            providerSelect.style.display = 'none';
+            document.querySelector('.btn-save-api').style.display = 'none';
+            savedApiKeyDisplay.style.display = 'block';
+            document.getElementById('savedKeyName').textContent = 'POLLINATIONS';
+            document.getElementById('savedProviderName').textContent = providerLabel('pollinations');
+            document.getElementById('useOurKeyMessage').style.display = 'none';
+
+            showSuccess('✨ Ücretsiz sağlayıcı aktif edildi!');
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
         }
 
         function showSuccess(message) {
@@ -833,7 +867,7 @@
                 return;
             }
 
-            if (!apiKey) {
+            if (!apiKey && provider !== 'pollinations') {
                 showError('Lütfen önce API anahtarını kaydedin');
                 return;
             }
@@ -842,7 +876,12 @@
 
             try {
                 // Sağlayıcı yönlendirme
-                if (provider === 'openai') {
+                if (provider === 'pollinations') {
+                    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
+                    addImageToGallery(imageUrl, prompt);
+                    document.getElementById('prompt').value = '';
+                    showSuccess('Görsel başarıyla oluşturuldu!');
+                } else if (provider === 'openai') {
                     // Network/CORS hatasını ele al
                     let response;
                     try {
@@ -929,9 +968,9 @@
                         throw new Error(hfMsg);
                     }
                 } else if (provider === 'gemini') {
-                    throw new Error('Google Gemini görsel üretimi desteklemiyor. Lütfen Hugging Face seçin veya "Bizim API Key" butonunu kullanın.');
+                    throw new Error('Google Gemini görsel üretimi desteklemiyor. Ücretsiz sağlayıcıyı veya Hugging Face’i seçin.');
                 } else if (provider === 'replicate') {
-                    throw new Error('Replicate API tarayıcıdan CORS nedeniyle çalışmıyor. Lütfen Hugging Face seçin veya "Bizim API Key" butonunu kullanın.');
+                    throw new Error('Replicate API tarayıcıdan CORS nedeniyle çalışmıyor. Ücretsiz sağlayıcıyı veya Hugging Face’i seçin.');
                 } else if (provider === 'claude') {
                     throw new Error('Anthropic Claude şu an görsel üretimi sunmuyor; metin ve görsel analiz odaklıdır.');
                 } else if (provider === 'grok') {
