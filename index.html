@@ -353,23 +353,22 @@
             });
         });
 
-        // Sayaç Fonksiyonu - localStorage ile
+        // Sayaç Fonksiyonu - Sabit hedef tarih ile (localStorage)
         function updateCounter() {
-            // İlk yüklemede başlangıç tarihini kaydet
-            const storageKey = 'counterStartTime';
-            let startTime = localStorage.getItem(storageKey);
+            const storageKey = 'counterTargetDate';
+            let targetTime = localStorage.getItem(storageKey);
             
-            if (!startTime) {
-                startTime = new Date().getTime();
-                localStorage.setItem(storageKey, startTime);
+            // Eğer hedef tarih yoksa, şu andan 29:22:20:10 sonrasını hedef olarak belirle
+            if (!targetTime) {
+                const remainingMs = (29 * 24 * 60 * 60 * 1000) + (22 * 60 * 60 * 1000) + (20 * 60 * 1000) + (10 * 1000);
+                const targetDate = new Date(Date.now() + remainingMs);
+                targetTime = targetDate.getTime();
+                localStorage.setItem(storageKey, targetTime);
             }
-            
-            const targetDate = new Date(parseInt(startTime) + 30 * 24 * 60 * 60 * 1000); // 30 gün sonrası
             
             function calculateTime() {
                 const current = new Date().getTime();
-                const target = targetDate.getTime();
-                const difference = target - current;
+                const difference = parseInt(targetTime) - current;
 
                 if (difference > 0) {
                     const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -394,11 +393,7 @@
         }
 
         // Sayaç başlat
-git add .
-git commit -m "kesin guncelleme"
-git push origin main --force
-
-updateCounter();
+        updateCounter();
     </script>
 
     <!-- Dino Oyunu -->
