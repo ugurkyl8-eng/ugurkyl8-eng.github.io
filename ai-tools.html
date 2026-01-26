@@ -696,7 +696,17 @@
         window.addEventListener('load', () => {
             const savedKey = localStorage.getItem('donerAI_apiKey');
             const savedKeyName = localStorage.getItem('donerAI_apiKeyName');
-            const savedProvider = localStorage.getItem('donerAI_provider') || 'openai';
+            let savedProvider = localStorage.getItem('donerAI_provider') || 'openai';
+
+            // Gemini görsel üretimi desteklenmiyor → kayıtlı gemini ayarını temizle
+            if (savedProvider === 'gemini') {
+                localStorage.removeItem('donerAI_apiKey');
+                localStorage.removeItem('donerAI_apiKeyName');
+                localStorage.setItem('donerAI_provider', 'replicate');
+                showError('Google Gemini görsel üretimini desteklemiyor. Lütfen Replicate seçin veya “Bizim API Key” butonunu kullanın.');
+                document.getElementById('useOurKeyMessage').style.display = 'block';
+                return;
+            }
 
             if (savedKey && savedKeyName) {
                 // Gizli modu aç
@@ -731,6 +741,11 @@
             const apiKeyName = apiKeyNameInput.value.trim();
             const provider = providerSelect.value;
             
+            if (provider === 'gemini') {
+                showError('Google Gemini şu anda görsel üretimi desteklemiyor. Lütfen Replicate veya OpenAI seçin.');
+                return;
+            }
+
             if (!apiKeyName) {
                 showError('Lütfen API anahtarının adını girin');
                 return;
@@ -924,56 +939,7 @@
                         throw new Error(hfMsg);
                     }
                 } else if (provider === 'gemini') {
-                    // Google Generative Language API - Image Generation (v1beta)
-                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagegeneration:generateImage?key=${encodeURIComponent(apiKey)}`;
-                    let gResponse;
-                    try {
-                        gResponse = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            prompt: { text: prompt }
-                        })
-                    });
-                    } catch (fetchErr) {
-                        throw new Error('🌐 Google Gemini\'ye Bağlanılamadı\n\nLütfen:\n1. İnternet bağlantınızı kontrol edin\n2. VPN/Proxy devre dışı bırakın\n3. API anahtarının geçerli olduğundan emin olun\n4. Tekrar deneyin');
-                    }
-
-                    if (!gResponse.ok) {
-                        const gErr = await gResponse.json().catch(() => ({ error: { message: 'Google Gemini API hatası' } }));
-                        const gMsg = gErr.error?.message || 'Google Gemini API hatası';
-                        throw new Error(gMsg);
-                    }
-
-                    const gData = await gResponse.json();
-                    let base64 = null;
-                    let mime = 'image/png';
-
-                    // Olası yanıt biçimleri için esnek ayrıştırma
-                    try {
-                        if (gData?.generatedImages?.[0]?.image?.bytesBase64Encoded) {
-                            base64 = gData.generatedImages[0].image.bytesBase64Encoded;
-                            mime = 'image/png';
-                        } else if (gData?.images?.[0]?.data) {
-                            base64 = gData.images[0].data;
-                            mime = gData.images[0].mimeType || 'image/png';
-                        } else if (gData?.candidates?.[0]?.content?.parts) {
-                            const part = gData.candidates[0].content.parts.find(p => p.inlineData && p.inlineData.data);
-                            if (part) {
-                                base64 = part.inlineData.data;
-                                mime = part.inlineData.mimeType || 'image/png';
-                            }
-                        }
-                    } catch (_) {}
-
-                    if (!base64) {
-                        throw new Error('Gemini yanıtı beklenen görsel verisini içermiyor.');
-                    }
-
-                    const dataUrl = `data:${mime};base64,${base64}`;
-                    addImageToGallery(dataUrl, prompt);
-                    document.getElementById('prompt').value = '';
-                    showSuccess('Görsel başarıyla oluşturuldu!');
+                    throw new Error('Google Gemini şu anda görsel üretimi desteklemiyor. Lütfen Replicate seçin.');
                 } else if (provider === 'replicate') {
                     // Replicate API - Stable Diffusion
                     let replicateResponse;
@@ -1026,6 +992,7 @@
                     } else {
                         throw new Error('Replicate görsel oluşturalamadı. Lütfen tekrar deneyin.');
                     }
+                } else if (provider === 'claude') {
                     throw new Error('Anthropic Claude şu an görsel üretimi sunmuyor; metin ve görsel analiz odaklıdır.');
                 } else if (provider === 'grok') {
                     throw new Error('xAI Grok metin odaklıdır, görsel oluşturma desteği yok.');
