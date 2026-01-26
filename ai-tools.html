@@ -890,28 +890,42 @@
                 } else if (provider === 'huggingface') {
                     let hfResponse;
                     try {
-                        hfResponse = await fetch('https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1', {
+                        // Daha küçük ve hızlı model kullan
+                        hfResponse = await fetch('https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${apiKey}`,
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ inputs: prompt })
+                        body: JSON.stringify({ 
+                            inputs: prompt,
+                            options: { wait_for_model: true }
+                        })
                     });
                     } catch (fetchErr) {
+                        console.error('HF Fetch Error:', fetchErr);
                         throw new Error('🌐 Hugging Face\'e Bağlanılamadı\n\nLütfen:\n1. İnternet bağlantınızı kontrol edin\n2. VPN/Proxy devre dışı bırakın\n3. API anahtarının geçerli olduğundan emin olun\n4. Tekrar deneyin');
                     }
 
                     // Hugging Face dönen yanıt blob (image) olabilir
                     const contentType = hfResponse.headers.get('content-type') || '';
+                    console.log('HF Response Status:', hfResponse.status, 'Content-Type:', contentType);
+                    
                     if (hfResponse.ok && contentType.includes('image')) {
                         const blob = await hfResponse.blob();
                         addImageBlobToGallery(blob, prompt);
                         document.getElementById('prompt').value = '';
                         showSuccess('Görsel başarıyla oluşturuldu!');
                     } else {
-                        const hfError = await hfResponse.json().catch(() => ({ error: { message: 'Hugging Face hata yanıtı' } }));
-                        const hfMsg = (typeof hfError.error === 'string' ? hfError.error : hfError.error?.message) || 'Hugging Face API hatası';
+                        const hfError = await hfResponse.json().catch(() => ({ error: 'Hugging Face hata yanıtı' }));
+                        console.error('HF Error Response:', hfError);
+                        
+                        // Model yüklenme hatası
+                        if (hfError.error && hfError.error.includes('loading')) {
+                            throw new Error('⏳ Model yükleniyor...\n\nModel ilk kez başlatılıyor, lütfen 20-30 saniye bekleyip tekrar deneyin.');
+                        }
+                        
+                        const hfMsg = (typeof hfError.error === 'string' ? hfError.error : hfError.error?.message) || `Hugging Face API hatası (${hfResponse.status})`;
                         throw new Error(hfMsg);
                     }
                 } else if (provider === 'gemini') {
