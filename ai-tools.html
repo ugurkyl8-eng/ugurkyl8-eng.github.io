@@ -557,12 +557,18 @@
         <div class="api-section">
             <h3>🔑 API Ayarları</h3>
             <p style="color: #a0a0a0; font-size: 13px; margin-bottom: 15px;">
-                🔒 <strong>Gizlilik & Güvenlik:</strong> API anahtarınız <strong>sadece tarayıcınızda</strong> saklanır (localStorage). Hiçbir sunucuya gönderilmez. 
+                🔒 <strong>Gizlilik & Güvenlik:</strong> API anahtarınız <strong>sadece tarayıcınızda</strong> saklanır (localStorage). Hiçbir sunucuya gönderilmez.
                 Hepsi güvende tutulur, gizliliğinize önem veriyoruz. Anahtarınızı gizli tutun ve asla başkasıyla paylaşmayın!
             </p>
-            <div style="margin-bottom: 15px;">
-                <input type="text" id="apiKeyName" placeholder="📝 API Anahtarının Adı (örn: MyProject)" value="" style="margin-bottom: 10px;">
-                <input type="password" id="apiKey" placeholder="sk-... (OpenAI API Key)" value="">
+            <div style="margin-bottom: 15px; display: grid; grid-template-columns: 1fr; gap: 10px;">
+                <select id="providerSelect" style="padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f7f7f7;">
+                    <option value="openai">OpenAI (DALL·E)</option>
+                    <option value="gemini">Google Gemini</option>
+                    <option value="claude">Anthropic Claude</option>
+                    <option value="grok">xAI Grok</option>
+                </select>
+                <input type="text" id="apiKeyName" placeholder="📝 API Anahtarının Adı (örn: MyProject)" value="" style="padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f7f7f7;">
+                <input type="password" id="apiKey" placeholder="API Key" value="" style="padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f7f7f7;">
             </div>
             <button class="btn-save-api" onclick="saveApiKey()">💾 Anahtarı Kaydet</button>
             <div id="successMessage" class="success-message">✓ API anahtarı başarıyla kaydedildi!</div>
@@ -570,6 +576,7 @@
             <div id="savedApiKeyDisplay" style="margin-top: 15px; padding: 15px; background: rgba(74, 222, 128, 0.15); border: 2px solid rgba(74, 222, 128, 0.3); border-radius: 8px; display: none;">
                 <p style="color: #4ade80; margin-bottom: 10px; font-weight: bold;">✓ Kaydedilmiş API Anahtarı</p>
                 <div id="savedKeyInfo" style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                    <p style="color: #a0a0a0; margin: 5px 0;"><strong>Sağlayıcı:</strong> <span id="savedProviderName" style="color: #4ade80;"></span></p>
                     <p style="color: #a0a0a0; margin: 5px 0;"><strong>Ad:</strong> <span id="savedKeyName" style="color: #4ade80;"></span></p>
                     <p style="color: #a0a0a0; margin: 5px 0;"><strong>Anahtarı:</strong> <span style="color: #4ade80;">••••••••••••••••••••••••••</span> (Gizli)</p>
                 </div>
@@ -609,8 +616,8 @@
         <!-- API Anahtarı Nerede Tutulduğu Bilgisi -->
         <div class="info-box">
             <strong>💾 Nerede Tutulur?</strong><br>
-            Kaydettiğiniz API anahtarı tarayıcınızın <strong>localStorage</strong> adlı yerel veri tabanında saklanır. 
-            Hiçbir sunucuya gönderilmez! Tüm görsel oluşturma işi direkt OpenAI'nin API'sine yapılır. Verileriniz tamamen güvenlidir.
+            Kaydettiğiniz API anahtarı tarayıcınızın <strong>localStorage</strong> adlı yerel veri tabanında saklanır.
+            Hiçbir sunucuya gönderilmez! Tüm görsel oluşturma işi seçtiğiniz sağlayıcının API'sine yapılır. Verileriniz tamamen güvenlidir.
         </div>
     </div>
 
@@ -644,6 +651,7 @@
         // API Key Management
         const apiKeyInput = document.getElementById('apiKey');
         const apiKeyNameInput = document.getElementById('apiKeyName');
+        const providerSelect = document.getElementById('providerSelect');
         const successMsg = document.getElementById('successMessage');
         const errorMsg = document.getElementById('errorMessage');
         const savedApiKeyDisplay = document.getElementById('savedApiKeyDisplay');
@@ -653,20 +661,34 @@
         window.addEventListener('load', () => {
             const savedKey = localStorage.getItem('donerAI_apiKey');
             const savedKeyName = localStorage.getItem('donerAI_apiKeyName');
-            
+            const savedProvider = localStorage.getItem('donerAI_provider') || 'openai';
+
             if (savedKey && savedKeyName) {
                 // Gizli modu aç
                 apiKeyInput.style.display = 'none';
                 apiKeyNameInput.style.display = 'none';
+                providerSelect.style.display = 'none';
                 document.querySelector('.btn-save-api').style.display = 'none';
                 savedApiKeyDisplay.style.display = 'block';
                 document.getElementById('savedKeyName').textContent = savedKeyName;
+                document.getElementById('savedProviderName').textContent = providerLabel(savedProvider);
             }
         });
+
+        function providerLabel(value) {
+            switch (value) {
+                case 'openai': return 'OpenAI (DALL·E)';
+                case 'gemini': return 'Google Gemini';
+                case 'claude': return 'Anthropic Claude';
+                case 'grok': return 'xAI Grok';
+                default: return value;
+            }
+        }
 
         function saveApiKey() {
             const apiKey = apiKeyInput.value.trim();
             const apiKeyName = apiKeyNameInput.value.trim();
+            const provider = providerSelect.value;
             
             if (!apiKeyName) {
                 showError('Lütfen API anahtarının adını girin');
@@ -678,13 +700,15 @@
                 return;
             }
 
-            if (!apiKey.startsWith('sk-')) {
-                showError('Geçersiz API anahtarı. Lütfen OpenAI API anahtarını kontrol edin.');
+            // Basit doğrulama: OpenAI için sk- prefix; diğerleri için sadece boş olmaması
+            if (provider === 'openai' && !apiKey.startsWith('sk-')) {
+                showError('Geçersiz API anahtarı. Lütfen OpenAI anahtarını kontrol edin.');
                 return;
             }
 
             localStorage.setItem('donerAI_apiKey', apiKey);
             localStorage.setItem('donerAI_apiKeyName', apiKeyName);
+            localStorage.setItem('donerAI_provider', provider);
             showSuccess('API anahtarı başarıyla kaydedildi!');
             
             // UI güncelle
@@ -692,8 +716,10 @@
                 successMsg.classList.remove('show');
                 apiKeyInput.style.display = 'none';
                 apiKeyNameInput.style.display = 'none';
+                providerSelect.style.display = 'none';
                 document.querySelector('.btn-save-api').style.display = 'none';
                 document.getElementById('savedKeyName').textContent = apiKeyName;
+                document.getElementById('savedProviderName').textContent = providerLabel(provider);
                 savedApiKeyDisplay.style.display = 'block';
             }, 500);
         }
@@ -702,10 +728,13 @@
             if (confirm('Bu API anahtarını silmek istediğinizden emin misiniz?')) {
                 localStorage.removeItem('donerAI_apiKey');
                 localStorage.removeItem('donerAI_apiKeyName');
+                localStorage.removeItem('donerAI_provider');
                 apiKeyInput.value = '';
                 apiKeyNameInput.value = '';
+                providerSelect.value = 'openai';
                 apiKeyInput.style.display = 'block';
                 apiKeyNameInput.style.display = 'block';
+                providerSelect.style.display = 'block';
                 document.querySelector('.btn-save-api').style.display = 'block';
                 savedApiKeyDisplay.style.display = 'none';
                 showSuccess('API anahtarı silindi. Yeni bir anahtarı kaydedebilirsiniz.');
@@ -731,6 +760,7 @@
         async function generateImage() {
             const prompt = document.getElementById('prompt').value.trim();
             const apiKey = localStorage.getItem('donerAI_apiKey');
+            const provider = localStorage.getItem('donerAI_provider') || 'openai';
 
             if (!prompt) {
                 showError('Lütfen bir prompt yazın');
@@ -745,18 +775,20 @@
             showLoading(true);
 
             try {
-                const response = await fetch('https://api.openai.com/v1/images/generations', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
-                    },
-                    body: JSON.stringify({
-                        prompt: prompt,
-                        n: 1,
-                        size: '1024x1024'
-                    })
-                });
+                // Sağlayıcı yönlendirme
+                if (provider === 'openai') {
+                    const response = await fetch('https://api.openai.com/v1/images/generations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            prompt: prompt,
+                            n: 1,
+                            size: '1024x1024'
+                        })
+                    });
 
                 if (!response.ok) {
                     const error = await response.json();
@@ -779,10 +811,19 @@
                     }
                 }
 
-                const data = await response.json();
-                addImageToGallery(data.data[0].url, prompt);
-                document.getElementById('prompt').value = '';
-                showSuccess('Görsel başarıyla oluşturuldu!');
+                    const data = await response.json();
+                    addImageToGallery(data.data[0].url, prompt);
+                    document.getElementById('prompt').value = '';
+                    showSuccess('Görsel başarıyla oluşturuldu!');
+                } else if (provider === 'gemini') {
+                    throw new Error('Google Gemini ile doğrudan görsel oluşturma bu arayüzde henüz desteklenmiyor. Yakında eklenecek.');
+                } else if (provider === 'claude') {
+                    throw new Error('Anthropic Claude şu an görsel üretimi sunmuyor; metin ve görsel analiz odaklıdır.');
+                } else if (provider === 'grok') {
+                    throw new Error('xAI Grok metin odaklıdır, görsel oluşturma desteği yok.');
+                } else {
+                    throw new Error('Bilinmeyen sağlayıcı. Lütfen ayarlarınızdan kontrol edin.');
+                }
                 
             } catch (error) {
                 showError('Görsel oluşturalamadı: ' + error.message);

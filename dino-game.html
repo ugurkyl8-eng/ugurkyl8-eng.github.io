@@ -143,283 +143,41 @@
             padding: 12px 30px;
             font-size: 16px;
             font-weight: bold;
-            border: 2px solid #ffc107;
-            background: rgba(255, 193, 7, 0.1);
-            color: #ffc107;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        button:hover {
-            background: rgba(255, 193, 7, 0.2);
-            transform: translateY(-2px);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: transparent;
-            color: #ffc107;
-            text-decoration: none;
-            border: 2px solid #ffc107;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .back-link:hover {
-            background: rgba(255, 193, 7, 0.1);
-        }
-
-        .instructions {
-            font-size: 14px;
-            color: #a0a0a0;
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            border-left: 3px solid #ffc107;
-        }
-
-        .game-over-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .game-over-content {
-            background: rgba(26, 58, 82, 0.95);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            border: 2px solid #ffc107;
-            max-width: 400px;
-        }
-
-        .game-over-title {
-            font-size: 32px;
-            color: #ff6b6b;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-
-        .game-over-score {
-            font-size: 24px;
-            color: #4ade80;
-            margin-bottom: 10px;
-        }
-
-        .game-over-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: center;
-        }
-
-        .game-over-buttons button {
-            flex: 1;
-        }
-
-        @media (max-width: 768px) {
-            .game-container {
-                padding: 20px;
-            }
-
-            .game-title {
-                font-size: 22px;
-            }
-
-            .game-header {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .game-stats {
-                gap: 15px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .stat-label,
-            .stat-value {
-                font-size: 14px;
-            }
-
-            #gameCanvas {
-                border-width: 2px;
-                width: 100%;
-                height: auto;
-            }
-
-            .game-controls {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            button {
-                width: 100%;
-                max-width: 300px;
-            }
-
-            .night-mode-toggle {
-                font-size: 12px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="game-container">
-        <div class="game-header">
-            <div class="game-title">🦕 Döner AI Dinozor Oyunu</div>
-            <div class="game-stats">
-                <div class="stat-item">
-                    <span class="stat-label">Puan:</span>
-                    <span class="stat-value" id="score">0</span>
+            <!DOCTYPE html>
+            <html lang="tr">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Döner AI Dinozor Oyunu</title>
+                <link rel="icon" type="image/webp" href="IMG_20260120_134136_893.webp">
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        min-height: 100vh; display: flex; align-items: center; justify-content: center;
+                        background: rgba(0,0,0,0.7) url('444ed40d944d995410f417a945372e6f.jpg') center/cover fixed;
+                        color: #f7f7f7; padding: 20px;
+                    }
+                    .empty-page {
+                        background: rgba(26,58,82,0.75); border: 1px solid rgba(255,255,255,0.2);
+                        border-radius: 16px; padding: 30px; max-width: 600px; text-align: center;
+                    }
+                    .empty-page h1 { font-size: 22px; margin-bottom: 10px; color: #ffc107; }
+                    .empty-page p { font-size: 14px; color: #a0a0a0; }
+                    .back-link {
+                        display: inline-block; margin-top: 20px; padding: 10px 20px;
+                        border: 2px solid #ffc107; color: #ffc107; border-radius: 8px; text-decoration: none;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="empty-page">
+                    <h1>Bu sayfa boşaltıldı</h1>
+                    <p>İçerik isteğiniz doğrultusunda kaldırıldı. Dosya referansı korunuyor.</p>
+                    <a href="index.html" class="back-link">← Ana Sayfaya Dön</a>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-label">Rekor:</span>
-                    <span class="stat-value record-value" id="record">0</span>
-                </div>
-                <div class="night-mode-toggle">
-                    <span>🌙 Gece Modu</span>
-                    <input type="checkbox" id="nightModeToggle" onchange="toggleNightMode()">
-                </div>
-            </div>
-        </div>
-
-        <div class="game-controls">
-            <button id="startBtn" onclick="startGame()">▶️ BAŞLAT</button>
-            <button id="pauseBtn" onclick="togglePause()" disabled>⏸️ DURAKLAT</button>
-            <button id="resetBtn" onclick="resetGame()">🔄 SIFIRLA</button>
-        </div>
-
-        <canvas id="gameCanvas" width="800" height="300"></canvas>
-
-        <div class="instructions">
-            <strong>Talimatlar:</strong> BAŞLAT butonuna basın → SPACE, ↑ tuşu veya ekrana dokunarak zıplayın → Kuşlardan ve kaktüslerden kaçının → 
-            Oyun git gide hızlanır! 🚀 | 🌙 Gece modunu deneyin!
-        </div>
-
-        <a href="index.html" class="back-link">← Ana Sayfaya Dön</a>
-    </div>
-
-    <!-- Game Over Screen -->
-    <div class="game-over-screen" id="gameOverScreen">
-        <div class="game-over-content">
-            <div class="game-over-title">OYUN BİTTİ!</div>
-            <div class="game-over-score">Puan: <span id="finalScore">0</span></div>
-            <div id="newRecord" style="color: #ffc107; font-size: 16px; margin-bottom: 10px; display: none;">
-                🎉 YENİ REKOR! 🎉
-            </div>
-            <div class="game-over-buttons">
-                <button onclick="startGame()">Tekrar Oyna</button>
-                <button onclick="goHome()">Ana Sayfa</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Canvas boyutunu ayarla (responsive)
-        function resizeCanvas() {
-            const container = document.querySelector('.game-container');
-            const maxWidth = Math.min(800, container.clientWidth - 60);
-            canvas.style.width = maxWidth + 'px';
-            canvas.style.height = (maxWidth * 0.375) + 'px'; // 800x300 oranını koru
-        }
-        
-        // Sayfa yüklendiğinde ve pencere boyutu değiştiğinde
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        // Oyun değişkenleri
-        let gameRunning = false;
-        let gamePaused = false;
-        let gameSpeed = 1;
-        let score = 0;
-        let record = localStorage.getItem('dinoGameRecord') || 0;
-        let startTime = 0;
-        let pausedTime = 0;
-        let nightMode = false;
-
-        // Dinozor
-        const dino = {
-            x: 50,
-            y: 0,
-            width: 44,
-            height: 47,
-            velocityY: 0,
-            jumping: false,
-            frame: 0
-        };
-
-        // Engeller
-        let obstacles = [];
-        let obstacleCount = 0;
-        let cloudX = 0;
-
-        // Update record display
-        document.getElementById('record').textContent = record;
-
-        // Chrome dinozorunu çiz
-        function drawDino() {
-            ctx.fillStyle = nightMode ? '#fff' : '#535353';
-            
-            // Vücut
-            ctx.fillRect(dino.x + 22, dino.y + 0, 22, 22);
-            
-            // Baş
-            ctx.fillRect(dino.x + 10, dino.y + 10, 12, 12);
-            
-            // Göz
-            ctx.fillStyle = nightMode ? '#535353' : '#fff';
-            ctx.fillRect(dino.x + 12, dino.y + 12, 4, 4);
-            
-            ctx.fillStyle = nightMode ? '#fff' : '#535353';
-            
-            // Ağız
-            ctx.fillRect(dino.x + 8, dino.y + 18, 6, 4);
-            
-            // Kol
-            ctx.fillRect(dino.x + 22, dino.y + 22, 6, 4);
-            
-            // Bacaklar (koşma animasyonu)
-            if (!dino.jumping) {
-                if (Math.floor(Date.now() / 100) % 2 === 0) {
-                    ctx.fillRect(dino.x + 22, dino.y + 32, 6, 15);
-                    ctx.fillRect(dino.x + 34, dino.y + 38, 6, 9);
-                } else {
-                    ctx.fillRect(dino.x + 22, dino.y + 38, 6, 9);
-                    ctx.fillRect(dino.x + 34, dino.y + 32, 6, 15);
-                }
-            } else {
-                ctx.fillRect(dino.x + 22, dino.y + 32, 6, 12);
-                ctx.fillRect(dino.x + 34, dino.y + 32, 6, 12);
-            }
-            
-            // Kuyruk
-            ctx.fillRect(dino.x + 38, dino.y + 6, 6, 6);
-            ctx.fillRect(dino.x + 42, dino.y + 0, 6, 6);
-        }
+            </body>
+            </html>
 
         // Kaktüs çiz
         function drawCactus(x, y, type) {
