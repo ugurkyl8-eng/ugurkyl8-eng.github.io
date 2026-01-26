@@ -587,11 +587,11 @@
             <div style="margin-bottom: 15px; display: grid; grid-template-columns: 1fr; gap: 10px;">
                 <select id="providerSelect" style="padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f7f7f7;">
                     <option value="openai">OpenAI (DALL·E)</option>
-                    <option value="replicate">Replicate (Stable Diffusion)</option>
-                    <option value="huggingface">Hugging Face (Stable Diffusion)</option>
-                    <option value="gemini">Google Gemini (Metin Analizi)</option>
-                    <option value="claude">Anthropic Claude</option>
-                    <option value="grok">xAI Grok</option>
+                    <option value="huggingface">Hugging Face (Stable Diffusion) ✓</option>
+                    <option value="replicate" disabled>Replicate (CORS Sorunu)</option>
+                    <option value="gemini" disabled>Google Gemini (Görsel yok)</option>
+                    <option value="claude" disabled>Anthropic Claude (Görsel yok)</option>
+                    <option value="grok" disabled>xAI Grok (Görsel yok)</option>
                 </select>
                 <input type="text" id="apiKeyName" placeholder="📝 API Anahtarının Adı (örn: MyProject)" value="" style="padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f7f7f7;">
                 <input type="password" id="apiKey" placeholder="API Key" value="" style="padding: 12px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f7f7f7;">
@@ -742,7 +742,12 @@
             const provider = providerSelect.value;
             
             if (provider === 'gemini') {
-                showError('Google Gemini şu anda görsel üretimi desteklemiyor. Lütfen Replicate veya OpenAI seçin.');
+                showError('Google Gemini şu anda görsel üretimi desteklemiyor. Lütfen Hugging Face veya OpenAI seçin.');
+                return;
+            }
+            
+            if (provider === 'replicate') {
+                showError('Replicate API tarayıcıdan CORS nedeniyle çalışmıyor. Lütfen Hugging Face seçin.');
                 return;
             }
 
@@ -803,35 +808,6 @@
                     successMsg.classList.remove('show');
                 }, 3000);
             }
-        }
-
-        // Bizim Gemini Key'ini kullan
-        function useOurGeminiKey() {
-            const replicateKey = 'r8_c4NUSWNjSZQG4wJPmEFPNQZEp9L0p7GHVmTgz';
-            localStorage.setItem('donerAI_apiKey', replicateKey);
-            localStorage.setItem('donerAI_apiKeyName', 'REPLICATE_API_KEY');
-            localStorage.setItem('donerAI_provider', 'replicate');
-            
-            // UI'yı güncelle
-            apiKeyInput.style.display = 'none';
-            apiKeyNameInput.style.display = 'none';
-            providerSelect.style.display = 'none';
-            document.querySelector('.btn-save-api').style.display = 'none';
-            savedApiKeyDisplay.style.display = 'block';
-            document.getElementById('savedKeyName').textContent = 'REPLICATE_API_KEY';
-            document.getElementById('savedProviderName').textContent = 'Replicate (Stable Diffusion)';
-            document.getElementById('useOurKeyMessage').style.display = 'none';
-            
-            // Değiştir butonunu gizle (bizim keyimiz için)
-            const changeBtn = document.querySelector('[onclick="clearSavedApiKey()"]');
-            if (changeBtn) {
-                changeBtn.style.display = 'none';
-            }
-            
-            showSuccess('✨ Replicate API keyimiz aktif edildi! Görsel oluşturmaya başlayabilirsiniz.');
-            setTimeout(() => {
-                successMsg.classList.remove('show');
-            }, 3000);
         }
 
         function showSuccess(message) {
@@ -939,59 +915,9 @@
                         throw new Error(hfMsg);
                     }
                 } else if (provider === 'gemini') {
-                    throw new Error('Google Gemini şu anda görsel üretimi desteklemiyor. Lütfen Replicate seçin.');
+                    throw new Error('Google Gemini görsel üretimi desteklemiyor. Lütfen Hugging Face seçin veya "Bizim API Key" butonunu kullanın.');
                 } else if (provider === 'replicate') {
-                    // Replicate API - Stable Diffusion
-                    let replicateResponse;
-                    try {
-                        replicateResponse = await fetch('https://api.replicate.com/v1/predictions', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${apiKey}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                version: 'db21e45d3f7023abc9e46f5955aae626caee30299ffd6ff9abdee3b50b4d67a9',
-                                input: { prompt: prompt }
-                            })
-                        });
-                    } catch (fetchErr) {
-                        throw new Error('🌐 Replicate\'e Bağlanılamadı\n\nLütfen:\n1. İnternet bağlantınızı kontrol edin\n2. VPN/Proxy devre dışı bırakın\n3. API anahtarının geçerli olduğundan emin olun\n4. Tekrar deneyin');
-                    }
-
-                    if (!replicateResponse.ok) {
-                        const rErr = await replicateResponse.json().catch(() => ({ detail: 'Replicate API hatası' }));
-                        const rMsg = rErr.detail || 'Replicate API hatası';
-                        throw new Error(rMsg);
-                    }
-
-                    const rData = await replicateResponse.json();
-                    const predictionId = rData.id;
-
-                    // Görsel oluşması için poll yap
-                    let prediction = rData;
-                    let attempts = 0;
-                    while (prediction.status === 'processing' && attempts < 120) {
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        try {
-                            const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
-                                headers: { 'Authorization': `Bearer ${apiKey}` }
-                            });
-                            if (pollRes.ok) {
-                                prediction = await pollRes.json();
-                            }
-                        } catch (_) {}
-                        attempts++;
-                    }
-
-                    if (prediction.status === 'succeeded' && prediction.output && prediction.output.length > 0) {
-                        const imageUrl = prediction.output[0];
-                        addImageToGallery(imageUrl, prompt);
-                        document.getElementById('prompt').value = '';
-                        showSuccess('Görsel başarıyla oluşturuldu!');
-                    } else {
-                        throw new Error('Replicate görsel oluşturalamadı. Lütfen tekrar deneyin.');
-                    }
+                    throw new Error('Replicate API tarayıcıdan CORS nedeniyle çalışmıyor. Lütfen Hugging Face seçin veya "Bizim API Key" butonunu kullanın.');
                 } else if (provider === 'claude') {
                     throw new Error('Anthropic Claude şu an görsel üretimi sunmuyor; metin ve görsel analiz odaklıdır.');
                 } else if (provider === 'grok') {
