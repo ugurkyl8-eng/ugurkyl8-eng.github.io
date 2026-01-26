@@ -292,18 +292,42 @@
             <span style="width: 8px; height: 8px; background-color: #ff0000; border-radius: 50%;"></span>
             <p style="font-size: 14px; color: #ff0000; font-weight: bold; margin: 0;">KAPALI</p>
         </div>
+        
+        <!-- Sayaç -->
+        <div style="margin-bottom: 20px; text-align: center;">
+            <p style="font-size: 12px; color: #ffc107; margin-bottom: 8px; font-weight: bold;">⏱️ Tahmini Kalan Süre</p>
+            <div style="display: inline-flex; align-items: center; gap: 15px; background-color: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 15px 25px;">
+                <div style="text-align: center;">
+                    <p style="font-size: 32px; color: #4ade80; font-weight: bold; margin: 0;" id="days">30</p>
+                    <p style="font-size: 11px; color: #a0a0a0; margin: 5px 0 0 0;">GÜN</p>
+                </div>
+                <div style="text-align: center;">
+                    <p style="font-size: 32px; color: #4ade80; font-weight: bold; margin: 0;" id="hours">00</p>
+                    <p style="font-size: 11px; color: #a0a0a0; margin: 5px 0 0 0;">SAAT</p>
+                </div>
+                <div style="text-align: center;">
+                    <p style="font-size: 32px; color: #4ade80; font-weight: bold; margin: 0;" id="minutes">00</p>
+                    <p style="font-size: 11px; color: #a0a0a0; margin: 5px 0 0 0;">DAKİKA</p>
+                </div>
+                <div style="text-align: center;">
+                    <p style="font-size: 32px; color: #4ade80; font-weight: bold; margin: 0;" id="seconds">00</p>
+                    <p style="font-size: 11px; color: #a0a0a0; margin: 5px 0 0 0;">SANİYE</p>
+                </div>
+            </div>
+        </div>
+        
         <p style="font-size: 14px; line-height: 1.8; max-width: 400px; margin: 0 auto;">1 Ocak 2026'da geliştirilmeye başlandı. Size en iyi ve yakın verimi sunmak için çaba gösteriyoruz. Çok yakında Döner AI, tüm dünyada hizmet verecek.</p>
 
         <!-- Sosyal Medya Footer -->
         <div class="social-footer">
             <a href="https://www.instagram.com/doneraioriginal?igsh=dml6bmF6dW12dDU0" class="social-icon" title="Instagram" target="_blank">
-                <img src="images (6).jpeg" alt="Instagram">
+                <img src="20260126150450.png" alt="Instagram">
             </a>
             <a href="https://discord.gg/5kjDxwzn5" class="social-icon" title="Discord" target="_blank">
-                <img src="images (4).png" alt="Discord">
+                <img src="20260126150403.png" alt="Discord">
             </a>
             <a href="https://youtube.com/@zenixeditsyt?si=Su8UD-ymZxmIPJcC" class="social-icon" title="YouTube" target="_blank">
-                <img src="png-clipart-youtube-play-button-computer-icons-youtube-youtube-logo-angle-rectangle-thumbnail.png" alt="YouTube">
+                <img src="20260126150432.png" alt="YouTube">
             </a>
         </div>
     </div>
@@ -335,6 +359,41 @@
                 overlay.classList.remove('active');
             });
         });
+
+        // Sayaç Fonksiyonu - 1 ay sonrası için
+        function updateCounter() {
+            const now = new Date();
+            const targetDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 gün sonrası
+            
+            function calculateTime() {
+                const current = new Date().getTime();
+                const target = targetDate.getTime();
+                const difference = target - current;
+
+                if (difference > 0) {
+                    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                    document.getElementById('days').innerText = String(days).padStart(2, '0');
+                    document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+                    document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+                    document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+                } else {
+                    document.getElementById('days').innerText = '00';
+                    document.getElementById('hours').innerText = '00';
+                    document.getElementById('minutes').innerText = '00';
+                    document.getElementById('seconds').innerText = '00';
+                }
+            }
+
+            calculateTime();
+            setInterval(calculateTime, 1000);
+        }
+
+        // Sayaç başlat
+        updateCounter();
     </script>
 </body>
 </html>
