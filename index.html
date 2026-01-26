@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Döner AI</title>
+    <title>Döner AI - Dinozor Oyunu</title>
     <link rel="icon" type="image/webp" href="IMG_20260120_134136_893.webp">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,850 +14,734 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: url('444ed40d944d995410f417a945372e6f.jpg');
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            min-height: 100vh;
+            background: #fff;
             display: flex;
-            align-items: center;
             justify-content: center;
-            color: #f7f7f7;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
-            padding-bottom: 180px;
-            overflow-y: auto;
-            overflow-x: hidden;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        /* Hamburger Menü */
-        .hamburger {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 1000;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(2px);
+        .game-container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .hamburger:hover {
-            border-color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.1);
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .hamburger span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background-color: #f7f7f7;
-            margin: 5px 0;
-            transition: 0.3s;
-            border-radius: 2px;
+        .game-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
         }
 
-        .hamburger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(10px, 10px);
-        }
-
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
-        }
-
-        /* Menü Sidebar */
-        .menu {
-            position: fixed;
-            left: -300px;
-            top: 0;
-            width: 300px;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
-            padding: 80px 20px 20px;
-            transition: left 0.3s ease;
-            z-index: 999;
-        }
-
-        .menu.active {
-            left: 0;
-        }
-
-        .menu a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            transition: all 0.3s ease;
+        .game-stats {
+            display: flex;
+            gap: 30px;
+            font-weight: bold;
             font-size: 16px;
         }
 
-        .menu a:nth-child(3) {
-            display: none;
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        @media (min-width: 769px) {
-            .menu a:nth-child(3) {
-                display: block;
-            }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
         }
 
-        .menu a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            padding-left: 25px;
+        .stat-value {
+            color: #22c55e;
+            font-size: 24px;
         }
 
-        /* Hakkımızda - Sağ Üst */
-        .about-btn {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: transparent;
-            color: #f7f7f7;
-            padding: 8px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
+        #gameCanvas {
+            border: 2px solid #333;
+            background: #fff;
+            display: block;
+            margin: 0 auto 15px;
+            image-rendering: pixelated;
+            cursor: none;
+        }
+
+        .controls {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .game-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid #333;
+            background: #22c55e;
+            color: white;
             border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
             transition: all 0.3s ease;
-            z-index: 100;
-            text-decoration: none;
-            backdrop-filter: blur(2px);
-            font-size: 14px;
         }
 
-        .about-btn:hover {
-            border-color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.1);
+        button:hover {
+            background: #16a34a;
             transform: translateY(-2px);
         }
 
-        /* Overlay */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            z-index: 998;
+        button:active {
+            transform: translateY(0);
         }
 
-        .overlay.active {
-            display: block;
+        .info-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            font-size: 13px;
+            color: #333;
+            text-align: left;
         }
 
-        /* Ana İçerik */
-        .container {
+        .game-over-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
             text-align: center;
-            background: rgba(26, 58, 82, 0.75);
-            padding: 40px 40px 30px 40px;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            position: relative;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            z-index: 100;
+            display: none;
+            min-width: 280px;
         }
 
-        h1 {
-            color: #f7f7f7;
+        .game-over-screen h2 {
             font-size: 32px;
             margin-bottom: 20px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 800;
-            text-align: center;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
         }
 
-        p {
-            color: #f7f7f7;
-            font-size: 16px;
-            margin-bottom: 30px;
-            line-height: 1.6;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-        }
-
-        /* Yeşil Buton - Anıları Gör */
-        .memories-btn {
-            background: #22c55e;
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 50px;
+        .game-over-stats {
             font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
-        }
-
-        .memories-btn:hover {
-            background: #16a34a;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.6);
-        }
-
-        .memories-btn:active {
-            transform: translateY(-1px);
-        }
-
-        /* Footer Sosyal Medya */
-        .social-footer {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 40px;
-            z-index: 500;
-        }
-
-        .social-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+            margin-bottom: 20px;
             background: rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            text-decoration: none;
+            padding: 15px;
+            border-radius: 5px;
         }
 
-        .social-icon:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-5px);
+        .game-over-stats p {
+            margin: 8px 0;
         }
 
-        .social-icon img {
-            width: 35px;
-            height: 35px;
-            object-fit: contain;
+        .game-over-stats .high-score {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .night-mode #gameCanvas {
+            background: #1a1a1a;
+            border-color: #f0f0f0;
+        }
+
+        .night-mode .game-title {
+            color: #f0f0f0;
+        }
+
+        .night-mode .stat-value {
+            color: #fbbf24;
+        }
+
+        .night-mode .controls {
+            color: #ccc;
         }
 
         @media (max-width: 768px) {
             body {
-                background-position: center center;
+                padding: 10px;
             }
 
-            .container {
-                padding: 25px 20px;
-                margin-top: 10px;
-                margin-bottom: 20px;
+            .game-container {
+                padding: 15px;
             }
 
-            h1 {
-                font-size: 22px;
+            .game-header {
+                gap: 10px;
+                margin-bottom: 10px;
             }
 
-            .memories-btn {
-                padding: 10px 25px;
-                font-size: 14px;
-            }
-
-            .social-footer {
-                flex-wrap: wrap;
-                gap: 15px;
-            }
-
-            .social-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 14px;
-            }
-
-            .social-icon img {
-                width: 25px;
-                height: 25px;
-            }
-
-            #gameContainer {
-                display: none !important;
-            }
-
-            #showGameBtn {
-                display: none !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
+            .game-title {
                 font-size: 18px;
             }
 
-            .hamburger span {
-                width: 20px;
-                height: 2px;
+            .game-stats {
+                gap: 15px;
+                font-size: 14px;
             }
 
-            .about-btn {
-                padding: 6px 12px;
-                font-size: 11px;
+            .stat-value {
+                font-size: 18px;
+            }
+
+            .controls {
+                font-size: 12px;
+            }
+
+            button {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+
+            .info-box {
+                font-size: 12px;
+                padding: 12px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Hamburger Menü Butonu -->
-    <button class="hamburger" id="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-
-    <!-- Sidebar Menü -->
-    <div class="menu" id="menu">
-        <a href="index.html">🏠 Ana Sayfa</a>
-        <a href="about.html">ℹ️ Hakkımızda</a>
-        <a href="dino-game.html">🎮 Oyun</a>
-    </div>
-
-    <!-- Overlay -->
-    <div class="overlay" id="overlay"></div>
-
-    <!-- Hakkımızda Butonu -->
-    <a href="about.html" class="about-btn">Hakkımızda</a>
-
-    <!-- Ana İçerik -->
-    <div class="container">
-        <h1 style="font-size: 48px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 15px;"><img src="IMG_20260120_134136_893.webp" alt="Döner AI" style="width: 100px; height: 100px; object-fit: contain; margin-left: -20px;"> Döner AI</h1>
-        <p style="font-size: 20px; color: #ff6b6b; margin-bottom: 15px; font-weight: bold;">Sizlerle Döner AI Sunar...</p>
-        <div style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px; background-color: rgba(255, 193, 7, 0.1); border: 2px solid #ffc107; border-radius: 6px; padding: 5px 15px;">
-            <span style="width: 8px; height: 8px; background-color: #ffc107; border-radius: 50%;"></span>
-            <p style="font-size: 14px; color: #ffc107; font-weight: bold; margin: 0;">ÇOK YAKINDA</p>
-        </div>
-        <div style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; background-color: rgba(255, 0, 0, 0.1); border: 2px solid #ff0000; border-radius: 6px; padding: 5px 15px;">
-            <span style="width: 8px; height: 8px; background-color: #ff0000; border-radius: 50%;"></span>
-            <p style="font-size: 14px; color: #ff0000; font-weight: bold; margin: 0;">KAPALI</p>
-        </div>
-        
-        <!-- Sayaç -->
-        <div style="margin-bottom: 20px; text-align: center;">
-            <p style="font-size: 12px; color: #ffc107; margin-bottom: 8px; font-weight: bold;">⏱️ Tahmini Kalan Süre</p>
-            <div style="display: inline-flex; align-items: center; gap: 15px; background-color: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 15px 25px;">
-                <div style="text-align: center;">
-                    <p style="font-size: 32px; color: #4ade80; font-weight: bold; margin: 0;" id="days">30</p>
-                    <p style="font-size: 11px; color: #a0a0a0; margin: 5px 0 0 0;">GÜN</p>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="game-title">🦖 Döner AI Dinozor</div>
+            <div class="game-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Puan</div>
+                    <div class="stat-value" id="score">0</div>
                 </div>
-                <div style="text-align: center;">
-                    <p style="font-size: 32px; color: #4ade80; font-weight: bold; margin: 0;" id="hours">00</p>
-                    <p style="font-size: 11px; color: #a0a0a0; margin: 5px 0 0 0;">SAAT</p>
-                </div>
-                <div style="text-align: center;">
-                    <p style="font-size: 32px; color: #4ade80; font-weight: bold; margin: 0;" id="minutes">00</p>
-                    <p style="font-size: 11px; color: #a0a0a0; margin: 5px 0 0 0;">DAKİKA</p>
-                </div>
-                <div style="text-align: center;">
-                    <p style="font-size: 32px; color: #4ade80; font-weight: bold; margin: 0;" id="seconds">00</p>
-                    <p style="font-size: 11px; color: #a0a0a0; margin: 5px 0 0 0;">SANİYE</p>
+                <div class="stat-item">
+                    <div class="stat-label">Rekor</div>
+                    <div class="stat-value" id="highScore">0</div>
                 </div>
             </div>
         </div>
-        
-        <p style="font-size: 14px; line-height: 1.8; max-width: 400px; margin: 0 auto; margin-bottom: 30px;">1 Ocak 2026'da geliştirilmeye başlandı. Size en iyi ve yakın verimi sunmak için çaba gösteriyoruz. Çok yakında Döner AI, tüm dünyada hizmet verecek.</p>
 
-        <!-- Sosyal Medya Footer -->
-        <div class="social-footer">
-            <a href="https://www.instagram.com/doneraioriginal?igsh=dml6bmF6dW12dDU0" class="social-icon" title="Instagram" target="_blank">
-                <img src="20260126150432.png" alt="Instagram">
-            </a>
-            <a href="https://discord.gg/5kjDxwzn5" class="social-icon" title="Discord" target="_blank">
-                <img src="20260126150403.png" alt="Discord">
-            </a>
-            <a href="https://youtube.com/@zenixeditsyt?si=Su8UD-ymZxmIPJcC" class="social-icon" title="YouTube" target="_blank">
-                <img src="20260126150450.png" alt="YouTube">
-            </a>
+        <canvas id="gameCanvas" width="800" height="300"></canvas>
+
+        <div class="controls">
+            <p>🎮 <strong>KONTROLLER:</strong> BOŞLUK veya ↑ = Zıpla | S veya ↓ = Eğil</p>
+            <p>📱 <strong>MOBİL:</strong> Ekrana dokunun = Zıpla | İki parmakla = Eğil</p>
+        </div>
+
+        <div class="game-buttons">
+            <button id="startBtn">Başla</button>
+            <button id="pauseBtn">Duraklat</button>
+            <button id="resetBtn">Sıfırla</button>
+        </div>
+
+        <div class="info-box">
+            <strong>🎯 Oyun Kuralları:</strong> Dinozoru engellerin üzerinden atlamasını sağla. Puanını artır ve rekor kır! 🌙 Her 500 puan aldığında gece modu açılıyor.
         </div>
     </div>
 
-    <script>
-        // Hamburger Menü
-        const hamburger = document.getElementById('hamburger');
-        const menu = document.getElementById('menu');
-        const overlay = document.getElementById('overlay');
-
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            menu.classList.toggle('active');
-            overlay.classList.toggle('active');
-        });
-
-        overlay.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            menu.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-
-        // Menü linklerine tıklanınca menüyü kapat
-        const menuLinks = document.querySelectorAll('.menu a');
-        menuLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                menu.classList.remove('active');
-                overlay.classList.remove('active');
-            });
-        });
-
-        // Sayaç Fonksiyonu - Sabit hedef tarih ile (localStorage)
-        const storageKey = 'counterTargetDate';
-        let targetTime = localStorage.getItem(storageKey);
-        
-        // Eğer hedef tarih yoksa, şu andan 29:22:20:10 sonrasını hedef olarak belirle
-        if (!targetTime) {
-            const remainingMs = (29 * 24 * 60 * 60 * 1000) + (22 * 60 * 60 * 1000) + (20 * 60 * 1000) + (10 * 1000);
-            const targetDate = new Date(Date.now() + remainingMs);
-            targetTime = targetDate.getTime();
-            localStorage.setItem(storageKey, targetTime);
-        }
-        
-        function calculateTime() {
-            const current = new Date().getTime();
-            const difference = parseInt(targetTime) - current;
-
-            if (difference > 0) {
-                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-                document.getElementById('days').innerText = String(days).padStart(2, '0');
-                document.getElementById('hours').innerText = String(hours).padStart(2, '0');
-                document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
-                document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
-            } else {
-                document.getElementById('days').innerText = '00';
-                document.getElementById('hours').innerText = '00';
-                document.getElementById('minutes').innerText = '00';
-                document.getElementById('seconds').innerText = '00';
-            }
-        }
-
-        // Sayaç başlat - sayfayı yükle
-        calculateTime();
-        
-        // Her saniye güncelle
-        const counterInterval = setInterval(calculateTime, 1000);
-        
-        // Sayfa görünürlüğü değişirse güncelle
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                calculateTime();
-            }
-        });
-    </script>
-
-    <!-- Oyunu Göster Butonu -->
-    <div id="showGameBtn" style="position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 1001; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 12px 30px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); transition: all 0.3s ease;">
-        🎮 Oyunu Göster
-    </div>
-
-    <!-- Dino Oyunu -->
-    <div id="gameContainer" style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.8); padding: 10px; text-align: center; z-index: 999; display: none;">
-        <button id="hideGameBtn" style="position: absolute; top: 5px; right: 10px; background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">✕</button>
-        <p style="color: white; font-size: 12px; margin-bottom: 5px; margin-top: 15px;">Sıkılmamanız için sizin için küçük bir oyun</p>
-        <canvas id="dinoGame" width="600" height="150" style="background: #f7f7f7; border-radius: 5px; display: block; margin: 0 auto; width: 100%; max-width: 600px;"></canvas>
-        <div id="score" style="position: absolute; top: 15px; right: 20px; color: white; font-weight: bold; font-size: 16px;">Puan: 0</div>
+    <div class="game-over-screen" id="gameOverScreen">
+        <h2>OYUN BİTTİ!</h2>
+        <div class="game-over-stats">
+            <p>Puan: <strong id="finalScore">0</strong></p>
+            <p class="high-score">Rekor: <strong id="finalHighScore">0</strong></p>
+        </div>
+        <button onclick="location.reload()">Yeniden Oynat</button>
     </div>
 
     <script>
-        const canvas = document.getElementById('dinoGame');
+        // ================================
+        // CANVAS ve OYUN SETUP
+        // ================================
+        const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const gameContainer = document.getElementById('gameContainer');
-        const showGameBtn = document.getElementById('showGameBtn');
-        const hideGameBtn = document.getElementById('hideGameBtn');
+        const scoreDisplay = document.getElementById('score');
+        const highScoreDisplay = document.getElementById('highScore');
+        const gameOverScreen = document.getElementById('gameOverScreen');
 
-        // Oyun göster/gizle kontrolleri
-        if (showGameBtn) {
-            showGameBtn.addEventListener('click', () => {
-                gameContainer.style.display = 'block';
-                showGameBtn.style.display = 'none';
-            });
-        }
-
-        if (hideGameBtn) {
-            hideGameBtn.addEventListener('click', () => {
-                gameContainer.style.display = 'none';
-                showGameBtn.style.display = 'block';
-            });
-        }
-
-        let score = 0;
-        let gameSpeed = 6;
-        let gameOver = false;
-        let isJumping = false;
-        let gravity = 0.6;
-        let jumpPower = 0;
-        let isDay = true;
-        let frameCount = 0;
-        let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-        // Dino
-        const dino = {
-            x: 50,
-            y: canvas.height - 60,
-            width: 40,
-            height: 50,
-            velocityY: 0,
-            jump: function() {
-                if (!isJumping && !gameOver) {
-                    this.velocityY = -12;
-                    isJumping = true;
-                }
-            },
-            update: function() {
-                this.velocityY += gravity;
-                this.y += this.velocityY;
-
-                if (this.y > canvas.height - 60) {
-                    this.y = canvas.height - 60;
-                    this.velocityY = 0;
-                    isJumping = false;
-                }
-            },
-            draw: function() {
-                ctx.fillStyle = '#535353';
-                // Gövde
-                ctx.fillRect(this.x, this.y, this.width, this.height);
-                // Baş
-                ctx.fillRect(this.x + 10, this.y - 15, 25, 20);
-                // Göz
-                ctx.fillStyle = 'white';
-                ctx.fillRect(this.x + 25, this.y - 10, 5, 5);
-                // Bacaklar
-                ctx.fillStyle = '#535353';
-                ctx.fillRect(this.x + 5, this.y + this.height, 8, 10);
-                ctx.fillRect(this.x + 25, this.y + this.height, 8, 10);
-            }
+        let gameState = {
+            running: false,
+            paused: false,
+            gameOver: false,
+            score: 0,
+            highScore: localStorage.getItem('dinerAiHighScore') || 0,
+            gameSpeed: 7,
+            nightMode: false,
+            frameCount: 0
         };
 
-        // Engeller
-        let obstacles = [];
-        let obstacleTimer = 0;
-
-        function createObstacle() {
-            const type = Math.random() > 0.5 ? 'cactus' : 'bird';
-            const obstacle = {
-                x: canvas.width,
-                y: type === 'cactus' ? canvas.height - 50 : canvas.height - 90,
-                width: type === 'cactus' ? 20 : 35,
-                height: type === 'cactus' ? 40 : 25,
-                type: type
-            };
-            obstacles.push(obstacle);
-        }
-
-        function updateObstacles() {
-            obstacleTimer++;
-            if (obstacleTimer > 100 - Math.floor(score / 100)) {
-                createObstacle();
-                obstacleTimer = 0;
+        // ================================
+        // DİNAZOR SINIFI
+        // ================================
+        class Dino {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 40;
+                this.height = 55;
+                this.velocityY = 0;
+                this.isJumping = false;
+                this.isDucking = false;
+                this.jumpPower = 12;
+                this.gravity = 0.6;
+                this.groundY = canvas.height - 80;
             }
 
-            obstacles.forEach((obstacle, index) => {
-                obstacle.x -= gameSpeed;
+            jump() {
+                if (!this.isJumping) {
+                    this.velocityY = -this.jumpPower;
+                    this.isJumping = true;
+                }
+            }
 
-                if (obstacle.x + obstacle.width < 0) {
-                    obstacles.splice(index, 1);
-                    score++;
-                    document.getElementById('score').innerText = 'Puan: ' + score;
-                    
-                    // Hız artışı
-                    if (score % 100 === 0) {
-                        gameSpeed += 0.5;
+            duck(isDucking) {
+                this.isDucking = isDucking;
+            }
+
+            update() {
+                if (this.isJumping) {
+                    this.velocityY += this.gravity;
+                    this.y += this.velocityY;
+
+                    if (this.y >= this.groundY) {
+                        this.y = this.groundY;
+                        this.velocityY = 0;
+                        this.isJumping = false;
                     }
                 }
+            }
 
-                // Çarpışma kontrolü
-                if (obstacle.x < dino.x + dino.width &&
-                    obstacle.x + obstacle.width > dino.x &&
-                    obstacle.y < dino.y + dino.height &&
-                    obstacle.y + obstacle.height > dino.y) {
-                    gameOver = true;
+            draw() {
+                // Dinazor gövdesi
+                ctx.fillStyle = gameState.nightMode ? '#FFD700' : '#22c55e';
+                if (this.isDucking) {
+                    ctx.fillRect(this.x, this.y + 20, this.width + 15, this.height - 25);
+                } else {
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
                 }
-            });
+
+                // Göz
+                ctx.fillStyle = gameState.nightMode ? '#1a1a1a' : '#fff';
+                if (!this.isDucking) {
+                    ctx.fillRect(this.x + 28, this.y + 8, 6, 6);
+                }
+
+                // Bacak
+                ctx.fillStyle = gameState.nightMode ? '#FFD700' : '#22c55e';
+                ctx.fillRect(this.x + 10, this.y + this.height - 5, 5, 8);
+                ctx.fillRect(this.x + 25, this.y + this.height - 5, 5, 8);
+            }
+
+            getBounds() {
+                if (this.isDucking) {
+                    return {
+                        x: this.x,
+                        y: this.y + 20,
+                        width: this.width + 15,
+                        height: this.height - 25
+                    };
+                }
+                return { x: this.x, y: this.y, width: this.width, height: this.height };
+            }
         }
 
-        function drawObstacles() {
-            obstacles.forEach(obstacle => {
-                ctx.fillStyle = '#535353';
-                if (obstacle.type === 'cactus') {
+        // ================================
+        // KAKTÜS SINIFI
+        // ================================
+        class Cactus {
+            constructor(x, y, width, height) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.speed = gameState.gameSpeed;
+            }
+
+            update() {
+                this.x -= this.speed;
+                this.speed = gameState.gameSpeed;
+            }
+
+            draw() {
+                ctx.fillStyle = gameState.nightMode ? '#ff6b6b' : '#ef4444';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+
+                // Kaktüs dikenler
+                ctx.fillRect(this.x - 5, this.y + 8, 5, 8);
+                ctx.fillRect(this.x + this.width, this.y + 8, 5, 8);
+            }
+
+            isOffScreen() {
+                return this.x + this.width < 0;
+            }
+
+            getBounds() {
+                return { x: this.x, y: this.y, width: this.width, height: this.height };
+            }
+        }
+
+        // ================================
+        // KUŞ (PTERODAKTIL) SINIFI
+        // ================================
+        class Bird {
+            constructor(x, heightLevel) {
+                this.x = x;
+                this.width = 45;
+                this.height = 28;
+                this.speed = gameState.gameSpeed + 1;
+
+                // Üç farklı yükseklik
+                const heights = {
+                    low: canvas.height - 100,
+                    medium: canvas.height - 140,
+                    high: canvas.height - 180
+                };
+                this.y = heights[heightLevel];
+                this.heightLevel = heightLevel;
+
+                this.wingFrame = 0;
+                this.wingFrameMax = 8;
+            }
+
+            update() {
+                this.x -= this.speed;
+                this.speed = gameState.gameSpeed + 1;
+                this.wingFrame = (this.wingFrame + 1) % (this.wingFrameMax * 2);
+            }
+
+            draw() {
+                ctx.fillStyle = gameState.nightMode ? '#87CEEB' : '#3b82f6';
+
+                // Gövde
+                ctx.fillRect(this.x + 5, this.y + 8, 25, 12);
+
+                // Baş
+                ctx.fillRect(this.x + 30, this.y + 5, 12, 15);
+
+                // Gözler
+                ctx.fillStyle = gameState.nightMode ? '#1a1a1a' : '#fff';
+                ctx.fillRect(this.x + 38, this.y + 8, 3, 3);
+
+                // Kanatlar (animasyon)
+                ctx.fillStyle = gameState.nightMode ? '#87CEEB' : '#3b82f6';
+                const wingBeat = Math.sin((this.wingFrame / this.wingFrameMax) * Math.PI) * 4;
+                ctx.beginPath();
+                ctx.moveTo(this.x + 10, this.y + 8);
+                ctx.lineTo(this.x - 5 + wingBeat, this.y + 2);
+                ctx.lineTo(this.x + 15, this.y + 8);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(this.x + 20, this.y + 8);
+                ctx.lineTo(this.x + 40 + wingBeat, this.y + 2);
+                ctx.lineTo(this.x + 25, this.y + 8);
+                ctx.fill();
+            }
+
+            isOffScreen() {
+                return this.x + this.width < 0;
+            }
+
+            getBounds() {
+                return { x: this.x + 5, y: this.y + 5, width: this.width - 10, height: this.height - 10 };
+            }
+        }
+
+        // ================================
+        // ENGELLER YÖNETİCİSİ
+        // ================================
+        class ObstacleManager {
+            constructor() {
+                this.obstacles = [];
+                this.spawnRate = 120;
+                this.spawnCounter = 0;
+            }
+
+            update() {
+                this.spawnCounter++;
+
+                if (this.spawnCounter >= this.spawnRate) {
+                    this.spawn();
+                    this.spawnCounter = 0;
+                    this.spawnRate = Math.max(60, this.spawnRate - 0.5);
+                }
+
+                this.obstacles = this.obstacles.filter(obs => !obs.isOffScreen());
+                this.obstacles.forEach(obs => obs.update());
+            }
+
+            spawn() {
+                const rand = Math.random();
+
+                if (rand < 0.6) {
                     // Kaktüs
-                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                    ctx.fillRect(obstacle.x - 5, obstacle.y + 10, 10, 15);
-                    ctx.fillRect(obstacle.x + 15, obstacle.y + 10, 10, 15);
+                    const cactiTypes = [
+                        { width: 15, height: 40 },
+                        { width: 25, height: 40 },
+                        { width: 15, height: 50 }
+                    ];
+                    const type = cactiTypes[Math.floor(Math.random() * cactiTypes.length)];
+                    this.obstacles.push(
+                        new Cactus(canvas.width, canvas.height - 80 - type.height, type.width, type.height)
+                    );
                 } else {
                     // Kuş
-                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                    // Kanatlar
-                    ctx.fillRect(obstacle.x - 5, obstacle.y + 8, 15, 3);
-                    ctx.fillRect(obstacle.x + 25, obstacle.y + 8, 15, 3);
+                    const heights = ['low', 'medium', 'high'];
+                    const heightLevel = heights[Math.floor(Math.random() * heights.length)];
+                    this.obstacles.push(new Bird(canvas.width, heightLevel));
                 }
-            });
-        }
-
-        // Gece/Gündüz değişimi
-        function updateBackground() {
-            frameCount++;
-            if (score > 0 && score % 200 === 0 && frameCount % 60 === 0) {
-                isDay = !isDay;
             }
-            ctx.fillStyle = isDay ? '#f7f7f7' : '#2b2b2b';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            draw() {
+                this.obstacles.forEach(obs => obs.draw());
+            }
+
+            checkCollision(dinoBounds) {
+                for (let obs of this.obstacles) {
+                    const obsBounds = obs.getBounds();
+                    if (this.isColliding(dinoBounds, obsBounds)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            isColliding(a, b) {
+                return (
+                    a.x < b.x + b.width &&
+                    a.x + a.width > b.x &&
+                    a.y < b.y + b.height &&
+                    a.y + a.height > b.y
+                );
+            }
+
+            clear() {
+                this.obstacles = [];
+                this.spawnCounter = 0;
+            }
         }
 
-        // Zemin
-        function drawGround() {
-            ctx.strokeStyle = isDay ? '#535353' : '#b0b0b0';
+        // ================================
+        // OYUN MOTORU LOJİĞİ
+        // ================================
+        const dino = new Dino(100, canvas.height - 135);
+        const obstacleManager = new ObstacleManager();
+
+        function updateNightMode() {
+            const nightModeThreshold = 500;
+            const scoreThreshold = Math.floor(gameState.score / nightModeThreshold);
+            gameState.nightMode = scoreThreshold % 2 === 1;
+
+            if (gameState.nightMode) {
+                document.body.classList.add('night-mode');
+            } else {
+                document.body.classList.remove('night-mode');
+            }
+        }
+
+        function update() {
+            if (gameState.gameOver || !gameState.running || gameState.paused) return;
+
+            dino.update();
+            obstacleManager.update();
+
+            // Puanı artır
+            gameState.frameCount++;
+            if (gameState.frameCount % 10 === 0) {
+                gameState.score++;
+                scoreDisplay.innerText = gameState.score;
+                updateNightMode();
+            }
+
+            // Hız artırma
+            gameState.gameSpeed = 7 + gameState.score / 100;
+
+            // Çarpışma kontrolü
+            const dinoBounds = dino.getBounds();
+            if (obstacleManager.checkCollision(dinoBounds)) {
+                gameState.gameOver = true;
+                endGame();
+            }
+        }
+
+        function draw() {
+            // Arka plan
+            if (gameState.nightMode) {
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Bulutlar
+            drawClouds();
+
+            // Zemin
+            ctx.strokeStyle = gameState.nightMode ? '#f0f0f0' : '#333';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(0, canvas.height - 10);
-            ctx.lineTo(canvas.width, canvas.height - 10);
+            ctx.moveTo(0, canvas.height - 80);
+            ctx.lineTo(canvas.width, canvas.height - 80);
             ctx.stroke();
+
+            // Zemin deseni
+            ctx.strokeStyle = gameState.nightMode ? 'rgba(240, 240, 240, 0.3)' : 'rgba(51, 51, 51, 0.2)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 30) {
+                ctx.beginPath();
+                ctx.moveTo(i - (gameState.frameCount % 30), canvas.height - 75);
+                ctx.lineTo(i + 10 - (gameState.frameCount % 30), canvas.height - 80);
+                ctx.stroke();
+            }
+
+            obstacleManager.draw();
+            dino.draw();
+        }
+
+        function drawClouds() {
+            const cloudColor = gameState.nightMode ? 'rgba(100, 100, 100, 0.4)' : 'rgba(200, 200, 200, 0.5)';
+            ctx.fillStyle = cloudColor;
+
+            const cloudY = 50;
+            const cloudOffset = (gameState.frameCount / 2) % canvas.width;
+
+            for (let i = -1; i < 3; i++) {
+                const x = i * 250 + cloudOffset;
+                // Basit bulut şekli
+                ctx.beginPath();
+                ctx.ellipse(x, cloudY, 35, 15, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(x + 30, cloudY - 5, 25, 12, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
 
         function gameLoop() {
-            if (!gameOver) {
-                updateBackground();
-                drawGround();
-                dino.update();
-                dino.draw();
-                updateObstacles();
-                drawObstacles();
-                requestAnimationFrame(gameLoop);
-            } else {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = 'white';
-                ctx.font = '30px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('OYUN BİTTİ!', canvas.width / 2, canvas.height / 2 - 20);
-                ctx.font = '16px Arial';
-                ctx.fillText('Puanınız: ' + score, canvas.width / 2, canvas.height / 2 + 10);
-                ctx.fillText('Tekrar başlamak için tıklayın', canvas.width / 2, canvas.height / 2 + 40);
-            }
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
         }
 
-        function resetGame() {
-            score = 0;
-            gameSpeed = 6;
-            gameOver = false;
-            isJumping = false;
-            obstacles = [];
-            obstacleTimer = 0;
-            dino.y = canvas.height - 60;
+        function startGame() {
+            gameState.running = true;
+            gameState.paused = false;
+            gameState.gameOver = false;
+            gameState.score = 0;
+            gameState.gameSpeed = 7;
+            gameState.frameCount = 0;
+            gameOverScreen.style.display = 'none';
+            obstacleManager.clear();
+            dino.y = canvas.height - 135;
             dino.velocityY = 0;
-            isDay = true;
-            frameCount = 0;
-            document.getElementById('score').innerText = 'Puan: 0';
-            gameLoop();
+            dino.isJumping = false;
+            scoreDisplay.innerText = '0';
+            updateNightMode();
         }
 
-        // Kontroller - Mobil ve Masaüstü desteği
-        if (isMobile) {
-            // Mobilde SADECE canvas'a basınca zıpla
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (gameOver) {
-                    resetGame();
-                } else {
-                    dino.jump();
-                }
-            }, { passive: false });
-        } else {
-            // Masaüstünde canvas'a click
-            canvas.addEventListener('click', (e) => {
-                if (gameOver) {
-                    resetGame();
-                } else {
-                    dino.jump();
-                }
-            });
+        function pauseGame() {
+            gameState.paused = !gameState.paused;
+            document.getElementById('pauseBtn').innerText = gameState.paused ? 'Devam Et' : 'Duraklat';
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' || e.code === 'ArrowUp') {
-                e.preventDefault();
-                if (gameOver) {
-                    resetGame();
-                } else {
-                    dino.jump();
-                }
+        function endGame() {
+            gameState.running = false;
+
+            if (gameState.score > gameState.highScore) {
+                gameState.highScore = gameState.score;
+                localStorage.setItem('dinerAiHighScore', gameState.highScore);
+                highScoreDisplay.innerText = gameState.highScore;
             }
+
+            document.getElementById('finalScore').innerText = gameState.score;
+            document.getElementById('finalHighScore').innerText = gameState.highScore;
+            gameOverScreen.style.display = 'block';
+        }
+
+        // ================================
+        // KONTROLLER
+        // ================================
+        const keys = {};
+
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+
+            if (e.key === ' ' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (gameState.running) dino.jump();
+            }
+
+            if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (gameState.running) dino.duck(true);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+
+            if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
+                if (gameState.running) dino.duck(false);
+            }
+        });
+
+        // MOBİL KONTROLLERI
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+
+            if (gameState.running && e.touches.length === 1) {
+                dino.jump();
+            }
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (gameState.running && e.touches.length === 2) {
+                dino.duck(true);
+            }
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (e.touches.length === 0) {
+                dino.duck(false);
+            }
+        });
+
+        // ================================
+        // BUTON KONTROLLERI
+        // ================================
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('pauseBtn').addEventListener('click', pauseGame);
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            gameState.gameOver = false;
+            gameState.running = false;
+            gameState.paused = false;
+            gameOverScreen.style.display = 'none';
+            startGame();
         });
 
         // Oyunu başlat
         gameLoop();
+        highScoreDisplay.innerText = gameState.highScore;
     </script>
-
-    <!-- MOBİL DİNAZOR OYUNU -->
-    <div id="mobileGameContainer" style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.85); padding: 10px; text-align: center; z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center;">
-        <button id="closeMobileGame" style="position: absolute; top: 10px; right: 15px; background: rgba(255,255,255,0.3); border: 1px solid white; color: white; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px;">✕</button>
-        <p style="color: white; font-size: 13px; margin-bottom: 8px; margin-top: 10px; font-weight: bold;">📱 Mobil Dinazor - Dokunarak Oyna!</p>
-        <canvas id="mobileGameCanvas" width="300" height="200" style="background: linear-gradient(to bottom, #87CEEB, #E0F6FF); border-radius: 5px; display: block; margin: 0 auto; border: 2px solid rgba(255,255,255,0.3);"></canvas>
-        <p id="mobileScore" style="color: #4ade80; font-size: 14px; font-weight: bold; margin-top: 8px;">Puan: 0</p>
-    </div>
-
-    <!-- MOBİL OYUN BUTONU -->
-    <div id="openMobileGameBtn" style="position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); z-index: 1001; background: linear-gradient(135deg, #ec4899, #db2777); color: white; padding: 12px 25px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 13px; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); transition: all 0.3s ease; display: none;">
-        📱 Mobil Oyun
-    </div>
-
-    <script>
-        // MOBİL OYUN KONTROLLERI
-        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const mobileGameContainer = document.getElementById('mobileGameContainer');
-        const openMobileGameBtn = document.getElementById('openMobileGameBtn');
-        const closeMobileGame = document.getElementById('closeMobileGame');
-        const mobileCanvas = document.getElementById('mobileGameCanvas');
-        const mobilectx = mobileCanvas.getContext('2d');
-
-        // Mobil cihazda oyun göster
-        if (isMobileDevice) {
-            openMobileGameBtn.style.display = 'block';
-            // Desktop oyununu gizle
-            if (showGameBtn) showGameBtn.style.display = 'none';
-        }
-
-        openMobileGameBtn.addEventListener('click', () => {
-            mobileGameContainer.style.display = 'flex';
-            openMobileGameBtn.style.display = 'none';
-            startMobileGame();
-        });
-
-        closeMobileGame.addEventListener('click', () => {
-            mobileGameContainer.style.display = 'none';
-            openMobileGameBtn.style.display = 'block';
-        });
-
-        // MOBİL OYUN LOJİĞİ
-        let mobileGameRunning = false;
-        let mobileDino = {
-            x: 30,
-            y: mobileCanvas.height - 50,
-            width: 30,
-            height: 40,
-            velocityY: 0,
-            jumping: false
-        };
-
-        let mobileObstacles = [];
-        let mobileScore = 0;
-        let mobileGameSpeed = 4;
-        let mobileObstacleTimer = 0;
-
-        function startMobileGame() {
-            mobileGameRunning = true;
-            mobileScore = 0;
-            mobileGameSpeed = 4;
-            mobileObstacles = [];
-            mobileDino.y = mobileCanvas.height - 50;
-            mobileDino.jumping = false;
-            document.getElementById('mobileScore').innerText = 'Puan: 0';
-            mobilGameLoop();
-        }
-
-        function mobilGameLoop() {
-            if (!mobileGameRunning) return;
-
-            // Arka plan
-            mobilectx.fillStyle = '#E0F6FF';
-            mobilectx.fillRect(0, 0, mobileCanvas.width, mobileCanvas.height);
-            mobilectx.fillStyle = '#87CEEB';
-            mobilectx.fillRect(0, 0, mobileCanvas.width, mobileCanvas.height / 2);
-
-            // Zemin
-            mobilectx.strokeStyle = '#333';
-            mobilectx.lineWidth = 2;
-            mobilectx.beginPath();
-            mobilectx.moveTo(0, mobileCanvas.height - 10);
-            mobilectx.lineTo(mobileCanvas.width, mobileCanvas.height - 10);
-            mobilectx.stroke();
-
-            // Dinazor güncelle
-            if (mobileDino.jumping) {
-                mobileDino.velocityY += 0.5;
-                mobileDino.y += mobileDino.velocityY;
-
-                if (mobileDino.y >= mobileCanvas.height - 50) {
-                    mobileDino.y = mobileCanvas.height - 50;
-                    mobileDino.jumping = false;
-                    mobileDino.velocityY = 0;
-                }
-            }
-
-            // Dinazor çiz
-            mobilectx.fillStyle = '#4CAF50';
-            mobilectx.fillRect(mobileDino.x, mobileDino.y, mobileDino.width, mobileDino.height);
-            mobilectx.fillStyle = 'white';
-            mobilectx.fillRect(mobileDino.x + 8, mobileDino.y + 5, 6, 6);
-
-            // Engeller ekle
-            mobileObstacleTimer++;
-            if (mobileObstacleTimer > 80 - Math.floor(mobileScore / 50)) {
-                mobileObstacles.push({
-                    x: mobileCanvas.width,
-                    y: mobileCanvas.height - 30,
-                    width: 15,
-                    height: 25
-                });
-                mobileObstacleTimer = 0;
-            }
-
-            // Engelleri güncelle ve çiz
-            for (let i = mobileObstacles.length - 1; i >= 0; i--) {
-                let obs = mobileObstacles[i];
-                obs.x -= mobileGameSpeed;
-
-                mobilectx.fillStyle = '#FF6B6B';
-                mobilectx.fillRect(obs.x, obs.y, obs.width, obs.height);
-
-                // Çarpışma kontrolü
-                if (obs.x < mobileDino.x + mobileDino.width &&
-                    obs.x + obs.width > mobileDino.x &&
-                    obs.y < mobileDino.y + mobileDino.height &&
-                    obs.y + obs.height > mobileDino.y) {
-                    mobileGameRunning = false;
-                    mobilectx.fillStyle = 'rgba(0,0,0,0.5)';
-                    mobilectx.fillRect(0, 0, mobileCanvas.width, mobileCanvas.height);
-                    mobilectx.fillStyle = 'white';
-                    mobilectx.font = 'bold 16px Arial';
-                    mobilectx.textAlign = 'center';
-                    mobilectx.fillText('OYUN BİTTİ!', mobileCanvas.width / 2, mobileCanvas.height / 2 - 20);
-                    mobilectx.font = '12px Arial';
-                    mobilectx.fillText('Puanınız: ' + mobileScore, mobileCanvas.width / 2, mobileCanvas.height / 2 + 10);
-                    return;
-                }
-
-                if (obs.x + obs.width < 0) {
-                    mobileObstacles.splice(i, 1);
-                    mobileScore++;
-                    if (mobileScore % 50 === 0) mobileGameSpeed += 0.3;
-                    document.getElementById('mobileScore').innerText = 'Puan: ' + mobileScore;
-                }
-            }
-
-            requestAnimationFrame(mobilGameLoop);
-        }
-
-        // Mobil oyun kontrolleri
-        mobileCanvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (mobileGameRunning && !mobileDino.jumping) {
-                mobileDino.velocityY = -10;
-                mobileDino.jumping = true;
-            }
-        }, { passive: false });
-    </script>
+</body>
+</html>
