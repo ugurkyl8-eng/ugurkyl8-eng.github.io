@@ -336,6 +336,29 @@
             height: 250px;
             object-fit: cover;
             display: block;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .image-card-edit-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .image-card:hover .image-card-edit-icon {
+            opacity: 1;
         }
 
         .image-card-info {
@@ -586,6 +609,15 @@
             </div>
         </div>
 
+        <!-- Bizim Key'i Kullan Mesajı -->
+        <div id="useOurKeyMessage" style="display: none; background: rgba(255, 193, 7, 0.15); border: 2px solid rgba(255, 193, 7, 0.4); border-radius: 10px; padding: 20px; margin-bottom: 20px; text-align: center;">
+            <p style="color: #ffc107; margin-bottom: 15px; font-weight: bold; font-size: 16px;">🔑 API Anahtarınız Yok</p>
+            <p style="color: #a0a0a0; margin-bottom: 20px;">Görsel oluşturmak için API anahtarı gerekmektedir. Bizim ücretsiz Gemini API'mizi kullanabilirsiniz!</p>
+            <button onclick="useOurGeminiKey()" style="background: linear-gradient(135deg, #ffc107, #ff9800); color: #000; padding: 12px 30px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
+                ✨ Bizim API Key'i Kullan
+            </button>
+        </div>
+
         <!-- Input Section -->
         <div class="input-section">
             <label for="prompt">📝 Görsel Açıklaması (Prompt)</label>
@@ -674,6 +706,10 @@
                 savedApiKeyDisplay.style.display = 'block';
                 document.getElementById('savedKeyName').textContent = savedKeyName;
                 document.getElementById('savedProviderName').textContent = providerLabel(savedProvider);
+                document.getElementById('useOurKeyMessage').style.display = 'none';
+            } else {
+                // API key yoksa, bizim keyimizi kullanma mesajını göster
+                document.getElementById('useOurKeyMessage').style.display = 'block';
             }
         });
 
@@ -744,11 +780,41 @@
                 providerSelect.style.display = 'block';
                 document.querySelector('.btn-save-api').style.display = 'block';
                 savedApiKeyDisplay.style.display = 'none';
+                document.getElementById('useOurKeyMessage').style.display = 'block';
                 showSuccess('API anahtarı silindi. Yeni bir anahtarı kaydedebilirsiniz.');
                 setTimeout(() => {
                     successMsg.classList.remove('show');
                 }, 3000);
             }
+        }
+
+        // Bizim Gemini Key'ini kullan
+        function useOurGeminiKey() {
+            const geminiKey = 'AIzaSyBFz7uip409vyDD2VizNNNi0plJtxp9snM';
+            localStorage.setItem('donerAI_apiKey', geminiKey);
+            localStorage.setItem('donerAI_apiKeyName', 'GEMINI_API_KEY');
+            localStorage.setItem('donerAI_provider', 'gemini');
+            
+            // UI'yı güncelle
+            apiKeyInput.style.display = 'none';
+            apiKeyNameInput.style.display = 'none';
+            providerSelect.style.display = 'none';
+            document.querySelector('.btn-save-api').style.display = 'none';
+            savedApiKeyDisplay.style.display = 'block';
+            document.getElementById('savedKeyName').textContent = 'GEMINI_API_KEY';
+            document.getElementById('savedProviderName').textContent = 'Google Gemini';
+            document.getElementById('useOurKeyMessage').style.display = 'none';
+            
+            // Değiştir butonunu gizle (bizim keyimiz için)
+            const changeBtn = document.querySelector('[onclick="clearSavedApiKey()"]');
+            if (changeBtn) {
+                changeBtn.style.display = 'none';
+            }
+            
+            showSuccess('✨ Gemini API keyimiz aktif edildi! Görsel oluşturmaya başlayabilirsiniz.');
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
         }
 
         function showSuccess(message) {
@@ -784,7 +850,10 @@
             try {
                 // Sağlayıcı yönlendirme
                 if (provider === 'openai') {
-                    const response = await fetch('https://api.openai.com/v1/images/generations', {
+                    // Network/CORS hatasını ele al
+                    let response;
+                    try {
+                        response = await fetch('https://api.openai.com/v1/images/generations', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -796,6 +865,9 @@
                             size: '1024x1024'
                         })
                     });
+                    } catch (fetchErr) {
+                        throw new Error('🌐 İnternet Bağlantı Hatası\n\nAPI\'ye ulaşılamadı. Lütfen:\n1. İnternet bağlantınızı kontrol edin\n2. VPN veya proxy kullanıyor iseniz devre dışı bırakın\n3. Tarayıcı konsolundaki hatayı kontrol edin (F12)\n4. Birkaç saniye bekleyip tekrar deneyin');
+                    }
 
                 if (!response.ok) {
                     const error = await response.json();
@@ -823,7 +895,9 @@
                     document.getElementById('prompt').value = '';
                     showSuccess('Görsel başarıyla oluşturuldu!');
                 } else if (provider === 'huggingface') {
-                    const hfResponse = await fetch('https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1', {
+                    let hfResponse;
+                    try {
+                        hfResponse = await fetch('https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${apiKey}`,
@@ -831,6 +905,9 @@
                         },
                         body: JSON.stringify({ inputs: prompt })
                     });
+                    } catch (fetchErr) {
+                        throw new Error('🌐 Hugging Face\'e Bağlanılamadı\n\nLütfen:\n1. İnternet bağlantınızı kontrol edin\n2. VPN/Proxy devre dışı bırakın\n3. API anahtarının geçerli olduğundan emin olun\n4. Tekrar deneyin');
+                    }
 
                     // Hugging Face dönen yanıt blob (image) olabilir
                     const contentType = hfResponse.headers.get('content-type') || '';
@@ -847,13 +924,18 @@
                 } else if (provider === 'gemini') {
                     // Google Generative Language API - Image Generation (v1beta)
                     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagegeneration:generateImage?key=${encodeURIComponent(apiKey)}`;
-                    const gResponse = await fetch(endpoint, {
+                    let gResponse;
+                    try {
+                        gResponse = await fetch(endpoint, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             prompt: { text: prompt }
                         })
                     });
+                    } catch (fetchErr) {
+                        throw new Error('🌐 Google Gemini\'ye Bağlanılamadı\n\nLütfen:\n1. İnternet bağlantınızı kontrol edin\n2. VPN/Proxy devre dışı bırakın\n3. API anahtarının geçerli olduğundan emin olun\n4. Tekrar deneyin');
+                    }
 
                     if (!gResponse.ok) {
                         const gErr = await gResponse.json().catch(() => ({ error: { message: 'Google Gemini API hatası' } }));
@@ -916,18 +998,133 @@
 
             const card = document.createElement('div');
             card.className = 'image-card';
-            card.innerHTML = `
-                <img src="${imageUrl}" alt="Oluşturulan görsel" loading="lazy">
-                <div class="image-card-info">
-                    <div class="image-card-prompt">${prompt}</div>
-                    <div class="image-card-buttons">
-                        <button class="btn-download" onclick="downloadImage('${imageUrl}', '${prompt}')">⬇️ İndir</button>
-                        <button class="btn-delete" onclick="deleteImageCard(this)">🗑️ Sil</button>
+            
+            const imgContainer = document.createElement('div');
+            imgContainer.style.position = 'relative';
+            imgContainer.style.width = '100%';
+            imgContainer.style.height = '250px';
+            imgContainer.style.overflow = 'hidden';
+            
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = 'Oluşturulan görsel';
+            img.loading = 'lazy';
+            
+            const editIcon = document.createElement('div');
+            editIcon.className = 'image-card-edit-icon';
+            editIcon.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>`;
+            editIcon.onclick = (e) => {
+                e.stopPropagation();
+                startEditMode(imageUrl, prompt);
+            };
+            
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(editIcon);
+            
+            const info = document.createElement('div');
+            info.className = 'image-card-info';
+            
+            const caption = document.createElement('div');
+            caption.className = 'image-card-prompt';
+            caption.textContent = prompt;
+
+            const actions = document.createElement('div');
+            actions.className = 'image-card-buttons';
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = '⬇️ İndir';
+            downloadBtn.className = 'btn-download';
+            downloadBtn.onclick = () => downloadImage(imageUrl);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = '🗑️ Sil';
+            deleteBtn.className = 'btn-delete';
+            deleteBtn.onclick = () => deleteImageCard(card);
+
+            actions.appendChild(downloadBtn);
+            actions.appendChild(deleteBtn);
+            info.appendChild(caption);
+            info.appendChild(actions);
+            
+            card.appendChild(imgContainer);
+            card.appendChild(info);
+            gallery.insertBefore(card, gallery.firstChild);
+        }
+
+        // Edit mode başlat
+        function startEditMode(imageUrl, originalPrompt) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0, 0, 0, 0.8); z-index: 2000; 
+                display: flex; align-items: center; justify-content: center;
+                padding: 20px;
+            `;
+            
+            const editContainer = document.createElement('div');
+            editContainer.style.cssText = `
+                background: #1a3a52; border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 15px; padding: 30px; max-width: 600px; width: 100%;
+                max-height: 90vh; overflow-y: auto;
+            `;
+            
+            editContainer.innerHTML = `
+                <h2 style="color: #f7f7f7; margin-bottom: 20px;">✏️ Görselinizi Düzenleyin</h2>
+                <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <img src="${imageUrl}" alt="Görsel" style="width: 100%; border-radius: 10px; max-height: 300px; object-fit: contain;">
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="color: #f7f7f7; display: block; margin-bottom: 10px; font-weight: bold;">📝 Yeni Prompt</label>
+                        <textarea id="editPrompt" style="
+                            width: 100%; height: 200px; padding: 12px;
+                            background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.2);
+                            border-radius: 8px; color: #f7f7f7; font-family: Inter, sans-serif;
+                            resize: vertical;
+                        ">${originalPrompt}</textarea>
                     </div>
                 </div>
+                
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button id="editSaveBtn" style="
+                        flex: 1; min-width: 150px; padding: 12px; background: linear-gradient(135deg, #4ade80, #22c55e);
+                        color: white; border: none; border-radius: 8px; font-weight: bold;
+                        cursor: pointer; transition: all 0.3s ease;
+                    ">💾 Kaydet & Yeniden Oluştur</button>
+                    <button id="editCancelBtn" style="
+                        flex: 1; min-width: 100px; padding: 12px; background: rgba(255, 107, 107, 0.2);
+                        color: #ff6b6b; border: 2px solid #ff6b6b; border-radius: 8px;
+                        font-weight: bold; cursor: pointer; transition: all 0.3s ease;
+                    ">❌ İptal</button>
+                </div>
             `;
-
-            gallery.insertBefore(card, gallery.firstChild);
+            
+            modal.appendChild(editContainer);
+            document.body.appendChild(modal);
+            
+            const editPromptInput = document.getElementById('editPrompt');
+            editPromptInput.focus();
+            editPromptInput.select();
+            
+            document.getElementById('editSaveBtn').onclick = () => {
+                const newPrompt = document.getElementById('editPrompt').value.trim();
+                if (newPrompt) {
+                    document.getElementById('prompt').value = newPrompt;
+                    generateImage();
+                    modal.remove();
+                }
+            };
+            
+            document.getElementById('editCancelBtn').onclick = () => {
+                modal.remove();
+            };
+            
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
         }
 
         // Hugging Face gibi blob döndüren sağlayıcılar için yardımcı
