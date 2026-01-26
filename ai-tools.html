@@ -432,7 +432,20 @@
             background: rgba(159, 122, 234, 0.1);
         }
 
-        .success-message {
+        .info-box {
+            background: rgba(66, 184, 221, 0.1);
+            border: 2px solid rgba(66, 184, 221, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #42b8dd;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #42b8dd;
+        }
             background: rgba(74, 222, 128, 0.2);
             border: 2px solid #4ade80;
             color: #4ade80;
@@ -537,7 +550,10 @@
         <!-- API Key Sektion -->
         <div class="api-section">
             <h3>🔑 API Ayarları</h3>
-            <p style="color: #a0a0a0; font-size: 13px; margin-bottom: 15px;">Lütfen OpenAI API anahtarınızı girin. Veri tarayıcınızda saklanır.</p>
+            <p style="color: #a0a0a0; font-size: 13px; margin-bottom: 15px;">
+                ⚠️ <strong>Güvenlik:</strong> API anahtarınız <strong>sadece tarayıcınızda</strong> saklanır (localStorage). Sunuculara göndermemiz yok. 
+                Gizli tutun ve asla başkasıyla paylaşmayın!
+            </p>
             <div class="api-input-group">
                 <input type="password" id="apiKey" placeholder="sk-... (OpenAI API Key)" value="">
                 <button class="btn-save-api" onclick="saveApiKey()">💾 Kaydet</button>
@@ -574,6 +590,20 @@
         </div>
 
         <a href="index.html" class="back-link">← Ana Sayfaya Dön</a>
+
+        <!-- API Anahtarı Nerede Tutulduğu Bilgisi -->
+        <div class="info-box">
+            <strong>💾 API Anahtarınız Nerede Tutulur?</strong><br>
+            Kaydettiğiniz API anahtarı tarayıcınızın <strong>localStorage</strong> adlı yerel veri tabanında saklanır. 
+            Sunucularına hiç gönderilmez! Görsel oluşturma işi direkt OpenAI API'sine yapılır.<br><br>
+            
+            <strong>📍 Nerede Buldunuz:</strong><br>
+            • Chrome/Edge: F12 → Application → Local Storage → http://localhost:8000<br>
+            • Firefox: F12 → Storage → Local Storage<br>
+            • İçinde <code>donerAI_apiKey</code> adlı anahtar vardır.<br><br>
+            
+            <strong>🔒 Dikkat:</strong> API anahtarınızı başkasıyla paylaşmayın!
+        </div>
     </div>
 
     <script>
@@ -676,14 +706,23 @@
                     body: JSON.stringify({
                         prompt: prompt,
                         n: 1,
-                        size: '1024x1024',
-                        quality: 'standard'
+                        size: '1024x1024'
                     })
                 });
 
                 if (!response.ok) {
                     const error = await response.json();
-                    throw new Error(error.error?.message || 'API hatası occurred');
+                    const errorMsg = error.error?.message || 'Bilinmeyen bir hata oluştu';
+                    
+                    if (response.status === 401) {
+                        throw new Error('API anahtarı geçersiz. Lütfen kontrol edin.');
+                    } else if (response.status === 429) {
+                        throw new Error('Çok fazla istek gönderildi. Lütfen bir dahika bekleyin.');
+                    } else if (response.status === 500) {
+                        throw new Error('OpenAI sunucusu hatası. Lütfen daha sonra tekrar deneyin.');
+                    } else {
+                        throw new Error(errorMsg);
+                    }
                 }
 
                 const data = await response.json();
