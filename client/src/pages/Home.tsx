@@ -61,13 +61,13 @@ export default function Home() {
 
                 <div className="flex flex-wrap gap-3 mb-6">
                   <div className="px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-400 uppercase tracking-tighter">
-                    AES-256 Şifreleme
+                    MongoDB Atlas
                   </div>
                   <div className="px-3 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20 text-[10px] font-bold text-purple-400 uppercase tracking-tighter">
                     GDPR Uyumlu
                   </div>
                   <div className="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">
-                    KVKK Korumalı
+                    Firebase Auth
                   </div>
                 </div>
                 
