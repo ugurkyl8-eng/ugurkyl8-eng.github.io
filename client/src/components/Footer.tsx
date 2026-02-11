@@ -1,4 +1,4 @@
-import { FaYoutube, FaInstagram, FaXTwitter } from "react-icons/fa6";
+import { FaYoutube, FaInstagram, FaXTwitter, FaDiscord } from "react-icons/fa6";
 import logoPng from "@/assets/logo.png";
 import { useLanguage } from "@/hooks/use-language";
 
@@ -28,6 +28,9 @@ export function Footer() {
             <a href="https://www.instagram.com/ugurcanwht?igsh=dTMxdzg5MjBrcmU=" target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 rounded-full hover:bg-white/10 hover:text-white text-white/60 transition-colors">
               <FaInstagram size={20} />
             </a>
+            <a href="https://discord.gg/HNyKAjYW" target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 rounded-full hover:bg-white/10 hover:text-white text-white/60 transition-colors">
+              <FaDiscord size={20} />
+            </a>
           </div>
         </div>
         
@@ -51,7 +54,7 @@ export function Footer() {
             <h4 className="text-white font-bold mb-6">{t("footer_support")}</h4>
             <ul className="space-y-4 text-sm text-white/50">
               <li>
-                <a href="mailto:zenixiletisimyt@gmail.com" className="px-6 py-2 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-colors inline-block text-white font-medium">
+                <a href="mailto:support@donerai.me" className="px-6 py-2 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-colors inline-block text-white font-medium">
                   {t("footer_contact")}
                 </a>
               </li>

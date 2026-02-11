@@ -240,7 +240,7 @@ export default function Home() {
               {t("faq_still_questions_text")}
             </p>
             <a 
-              href="mailto:zenixiletisimyt@gmail.com"
+              href="mailto:support@donerai.me"
               className="px-8 py-4 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform duration-200"
             >
               {t("faq_email_us")}

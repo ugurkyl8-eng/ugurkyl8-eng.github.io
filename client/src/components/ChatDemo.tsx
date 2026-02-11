@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "@/hooks/use-language";
 
 export function ChatDemo() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [visibleMessages, setVisibleMessages] = useState<number>(0);
 
   const messages = [
@@ -16,11 +16,11 @@ export function ChatDemo() {
   useEffect(() => {
     setVisibleMessages(0);
     const interval = setInterval(() => {
-      setVisibleMessages((prev) => (prev < messages.length ? prev + 1 : prev));
+      setVisibleMessages((prev) => (prev < 4 ? prev + 1 : prev));
     }, 1500);
 
     return () => clearInterval(interval);
-  }, [t]);
+  }, [language]);
 
   return (
     <div className="w-full max-w-md mx-auto h-[400px] bg-neutral-900/50 rounded-3xl border border-white/10 p-6 relative overflow-hidden flex flex-col justify-end shadow-2xl shadow-black">

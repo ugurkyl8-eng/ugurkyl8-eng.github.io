@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { type Language, translations } from "@/lib/i18n";
 
 interface LanguageContextType {
@@ -23,10 +23,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
   }, [language]);
 
-  const t = (key: string): string => {
+  const t = useCallback((key: string): string => {
     const trans = translations[language];
     return (trans as any)[key] || key;
-  };
+  }, [language]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
