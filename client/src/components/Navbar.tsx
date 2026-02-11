@@ -3,15 +3,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Home, Shield, CreditCard, HelpCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { useLanguage } from "@/hooks/use-language";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   const menuItems = [
-    { title: "Ana Sayfa", href: "/", icon: Home },
-    { title: "Premium Erişim", href: "/#premium", icon: CreditCard },
-    { title: "Gizlilik", href: "/privacy", icon: Shield },
-    { title: "SSS", href: "/#faq", icon: HelpCircle },
+    { title: t("nav_home"), href: "/", icon: Home },
+    { title: t("nav_premium"), href: "/#premium", icon: CreditCard },
+    { title: t("nav_privacy"), href: "/privacy", icon: Shield },
+    { title: t("nav_faq"), href: "/#faq", icon: HelpCircle },
   ];
 
   return (
@@ -39,9 +42,11 @@ export function Navbar() {
                   {item.title}
                 </Link>
               ))}
+              <LanguageSelector />
             </div>
 
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center gap-2">
+              <LanguageSelector />
               <Button 
                 variant="ghost" 
                 size="icon" 

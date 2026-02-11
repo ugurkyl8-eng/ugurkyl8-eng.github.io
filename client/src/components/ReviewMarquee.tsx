@@ -1,17 +1,19 @@
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useReviews } from "@/hooks/use-reviews";
-
-const MOCK_REVIEWS = [
-  { id: 991, name: "Ahmet Y.", content: "Türkçe dil desteği inanılmaz iyi. Rakiplerinden çok daha doğal konuşuyor.", rating: 5 },
-  { id: 992, name: "Selin K.", content: "Premium özellikler tam f/p ürünü olmuş. Çok memnunum.", rating: 5 },
-  { id: 993, name: "Mehmet D.", content: "Kod yazarken çok yardımcı oluyor, özellikle Python konusunda.", rating: 4 },
-  { id: 994, name: "Ayşe B.", content: "Arayüz çok şık ve hızlı. Karanlık tema göz yormuyor.", rating: 5 },
-  { id: 995, name: "Caner T.", content: "Sonunda yerli ve milli bir AI projesi. Tebrikler!", rating: 5 },
-];
+import { useLanguage } from "@/hooks/use-language";
 
 export function ReviewMarquee() {
   const { data: reviews, isLoading } = useReviews();
+  const { t } = useLanguage();
+
+  const MOCK_REVIEWS = [
+    { id: 991, name: t("mock_r1_name"), content: t("mock_r1_text"), rating: 5 },
+    { id: 992, name: t("mock_r2_name"), content: t("mock_r2_text"), rating: 5 },
+    { id: 993, name: t("mock_r3_name"), content: t("mock_r3_text"), rating: 4 },
+    { id: 994, name: t("mock_r4_name"), content: t("mock_r4_text"), rating: 5 },
+    { id: 995, name: t("mock_r5_name"), content: t("mock_r5_text"), rating: 5 },
+  ];
 
   const displayReviews = (reviews && reviews.length > 0) ? reviews : MOCK_REVIEWS;
 

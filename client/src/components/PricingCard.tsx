@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import logoPng from "@/assets/logo.png";
+import { useLanguage } from "@/hooks/use-language";
 
 interface PricingFeature {
   text: string;
@@ -20,11 +21,12 @@ interface PricingProps {
 
 export function PricingCard({ title, price, oldPrice, features, recommended, className }: PricingProps) {
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleBuy = () => {
     toast({
-      title: "Henüz Kullanılamıyor",
-      description: "Şuan alamazsınız daha eklenmedi.",
+      title: t("pricing_not_available"),
+      description: t("pricing_not_available_desc"),
       variant: "default",
     });
   };
@@ -42,7 +44,7 @@ export function PricingCard({ title, price, oldPrice, features, recommended, cla
     >
       {recommended && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#FFD700] text-black text-xs font-bold rounded-full uppercase tracking-wider shadow-[0_0_20px_rgba(255,215,0,0.3)]">
-          Çok Satan
+          {t("pricing_best_seller")}
         </div>
       )}
 
@@ -56,7 +58,7 @@ export function PricingCard({ title, price, oldPrice, features, recommended, cla
             {oldPrice && <span className="text-white/30">→</span>}
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold text-white tracking-tight">{price}</span>
-              {price !== "Ücretsiz" && <span className="text-white/50 text-sm">/ay</span>}
+              {price !== t("pricing_free") && <span className="text-white/50 text-sm">/mo</span>}
             </div>
           </div>
         </div>
@@ -87,7 +89,7 @@ export function PricingCard({ title, price, oldPrice, features, recommended, cla
             : "bg-white/10 text-white hover:bg-white/20"
         )}
       >
-        Satın Al
+        {t("pricing_purchase")}
       </button>
     </motion.div>
   );

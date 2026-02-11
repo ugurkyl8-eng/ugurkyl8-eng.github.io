@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useLanguage } from "@/hooks/use-language";
 
 const models = [
   { name: "GEMINI FLASH 3", logo: "https://www.chip.de/ii/1/2/7/2/0/6/3/9/2/Design_ohne_Titel_-_2025-09-11T141437.381-80762a52a0610058.jpg" },
@@ -11,11 +12,13 @@ const models = [
 ];
 
 export function ModelTicker() {
+  const { t } = useLanguage();
+
   return (
     <section className="py-20 border-y border-white/5 bg-black/30 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 mb-12 text-center">
         <h2 className="text-3xl font-bold tracking-tight text-white uppercase">
-          DÖNER AI DESTEKLEDİĞİMİZ MODELLER
+          {t("models_title")}
         </h2>
       </div>
       

@@ -1,23 +1,26 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-
-const messages = [
-  { role: "user", text: "Döner AI nedir?" },
-  { role: "ai", text: "Döner AI, 27 Aralık 2025'te geliştirilmeye başlanan en gelişmiş Türk yapay zeka asistanıdır." },
-  { role: "user", text: "Neler yapabilirsin?" },
-  { role: "ai", text: "Kod yazabilirim, Türkçe metinleri kusursuz analiz edebilirim ve en yeni modelleri kullanırım." },
-];
+import { useLanguage } from "@/hooks/use-language";
 
 export function ChatDemo() {
+  const { t } = useLanguage();
   const [visibleMessages, setVisibleMessages] = useState<number>(0);
 
+  const messages = [
+    { role: "user", text: t("chat_q1") },
+    { role: "ai", text: t("chat_a1") },
+    { role: "user", text: t("chat_q2") },
+    { role: "ai", text: t("chat_a2") },
+  ];
+
   useEffect(() => {
+    setVisibleMessages(0);
     const interval = setInterval(() => {
       setVisibleMessages((prev) => (prev < messages.length ? prev + 1 : prev));
     }, 1500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [t]);
 
   return (
     <div className="w-full max-w-md mx-auto h-[400px] bg-neutral-900/50 rounded-3xl border border-white/10 p-6 relative overflow-hidden flex flex-col justify-end shadow-2xl shadow-black">

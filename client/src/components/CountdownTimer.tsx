@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/hooks/use-language";
 
 export function CountdownTimer() {
+  const { t } = useLanguage();
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -44,17 +46,17 @@ export function CountdownTimer() {
     <section className="py-20 bg-black/50 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold tracking-tight text-white uppercase mb-4">
-          DÖNER AI TAHMİNİ ÇIKIŞ SÜRESİ
+          {t("countdown_title")}
         </h2>
         <p className="text-white/40 text-xs uppercase tracking-[0.2em] mb-12">
-          ( ERTELENEBİLİR TAHMİNİDİR )
+          {t("countdown_subtitle")}
         </p>
         
         <div className="flex flex-wrap justify-center gap-4">
-          <TimeUnit value={timeLeft.days} label="GÜN" />
-          <TimeUnit value={timeLeft.hours} label="SAAT" />
-          <TimeUnit value={timeLeft.minutes} label="DAKİKA" />
-          <TimeUnit value={timeLeft.seconds} label="SANİYE" />
+          <TimeUnit value={timeLeft.days} label={t("countdown_days")} />
+          <TimeUnit value={timeLeft.hours} label={t("countdown_hours")} />
+          <TimeUnit value={timeLeft.minutes} label={t("countdown_minutes")} />
+          <TimeUnit value={timeLeft.seconds} label={t("countdown_seconds")} />
         </div>
       </div>
     </section>
